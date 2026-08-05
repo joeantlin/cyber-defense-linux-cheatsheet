@@ -17,6 +17,8 @@
     --amber:      #f5a524;
     --red:        #e5484d;
     --red-dim:    #7a2c2e;
+    --blue:       #60a5fa;
+    --blue-dim:   #2c4a75;
     --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
   }
   *{box-sizing:border-box;}
@@ -254,6 +256,37 @@
     padding:2px 16px 14px 16px;
     border-top:1px solid var(--line);
   }
+  /* verdict banner — preference labeling between related/alternate commands */
+  .verdict{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    margin:10px 0 0;
+    padding:9px 12px;
+    border-radius:3px;
+    border:1px solid;
+    font-size:12px;
+    line-height:1.5;
+  }
+  .verdict-icon{flex:0 0 auto;font-size:13px;line-height:1.4;}
+  .verdict-label{
+    font-weight:700;
+    text-transform:uppercase;
+    font-size:10px;
+    letter-spacing:0.06em;
+    display:block;
+    margin-bottom:2px;
+  }
+  .verdict-preferred{border-color:var(--green-dim);background:rgba(74,222,128,0.07);color:var(--text);}
+  .verdict-preferred .verdict-icon{color:var(--green);}
+  .verdict-preferred .verdict-label{color:var(--green);}
+  .verdict-alternative{border-color:var(--line);background:rgba(255,255,255,0.02);color:var(--text-dim);}
+  .verdict-alternative .verdict-icon{color:var(--text-dim);}
+  .verdict-alternative .verdict-label{color:var(--text-dim);}
+  .verdict-situational{border-color:var(--blue-dim);background:rgba(96,165,250,0.07);color:var(--text);}
+  .verdict-situational .verdict-icon{color:var(--blue);}
+  .verdict-situational .verdict-label{color:var(--blue);}
+  .verdict a.xref{color:inherit;font-weight:700;border-bottom-color:currentColor;}
   .risk-badge{
     font-size:10px;
     color:var(--red);
@@ -555,6 +588,8 @@
 
 <span class="c"># Find unusually large files</span>
 <span class="p">$</span> ls -laS</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-find" class="xref" data-target="cmd-find">find</a></div></div>
         </div>
       </details>
 
@@ -563,21 +598,38 @@
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Changes the shell's current working directory. Accepts absolute paths (start with <code>/</code>), relative paths, <code>.</code>/<code>..</code>, or <code>~</code> for the home directory.</p></div>
+            <div class="field-body"><p>Changes the shell's current working directory — where you "are" in the filesystem for every command that follows, until you <code>cd</code> again. Accepts absolute paths (start with <code>/</code>), relative paths, <code>.</code>/<code>..</code>, or <code>~</code> for the home directory.</p></div>
           </div>
+          <div class="field"><div class="field-label">Use Case</div>
+            <div class="field-body"><p>One of the very first commands anyone learns, since almost everything else in a terminal depends on being in the right place first — running a script, editing a config, or checking a log all assume you're already where you need to be. Getting comfortable moving around quickly (especially <code>cd -</code>, below) pays off constantly.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> cd [path]</pre></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Absolute path</span>
+            <pre class="example"><span class="c"># Absolute path — always starts from the filesystem root</span>
 <span class="p">$</span> cd /home/user1/Desktop/
 
-<span class="c"># Previous directory</span>
+<span class="c"># Relative path — starts from wherever you already are</span>
+<span class="p">$</span> cd Desktop/notes
+
+<span class="c"># Up one level to the parent directory</span>
 <span class="p">$</span> cd ..
 
+<span class="c"># Up two levels at once</span>
+<span class="p">$</span> cd ../..
+
 <span class="c"># Home directory shortcut</span>
-<span class="p">$</span> cd ~/Downloads</pre></div>
+<span class="p">$</span> cd ~/Downloads
+
+<span class="c"># No argument at all — jumps straight home, same as cd ~</span>
+<span class="p">$</span> cd
+
+<span class="c"># Jump back to whichever directory you were in immediately before —</span>
+<span class="c"># the fast way to move back and forth between two places</span>
+<span class="p">$</span> cd -</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p><code>.</code> = current directory, <code>..</code> = parent directory, <code>~</code> = home directory. Root user's home is <code>/root</code>, not to be confused with <code>/</code> (filesystem root).</p></div></div>
+            <div class="field-body"><p><code>.</code> = current directory, <code>..</code> = parent directory, <code>~</code> = home directory. Root user's home is <code>/root</code>, not to be confused with <code>/</code> (filesystem root). <code>cd</code> is a shell builtin, not a separate program on disk — it has to be, since a standalone program can't change the shell's own working directory once it exits. That's also why <code>cd</code> inside a script only affects that script's subshell, not the terminal you ran it from.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-pwd" class="xref" data-target="cmd-pwd">pwd</a>, <a href="#cmd-ls" class="xref" data-target="cmd-ls">ls</a>, <a href="#cmd-find" class="xref" data-target="cmd-find">find</a></div></div>
         </div>
       </details>
 
@@ -602,6 +654,8 @@
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> touch [flags] [filename/filepath]</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> touch new_notes.txt</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>An attacker touching files to fake or hide modification times is worth watching for during investigations — compare timestamps against expected change windows.</p></div></div>
         </div>
@@ -621,6 +675,9 @@
               <tr><th>Flag</th><th>What it does</th></tr>
               <tr><td>-p / --parent</td><td>Create any missing parent directories along the path</td></tr>
             </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Create nested directories in one shot, even if none exist yet</span>
+<span class="p">$</span> mkdir -p /home/user1/logs/archive</pre></div>
         </div>
       </details>
 
@@ -633,6 +690,9 @@
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> cp [source] [destination]</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Back up a config before editing it</span>
+<span class="p">$</span> cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</pre></div>
         </div>
       </details>
 
@@ -645,6 +705,9 @@
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> mv [source] [destination]</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Rename a file in place</span>
+<span class="p">$</span> mv suspicious.sh suspicious.sh.quarantined</pre></div>
         </div>
       </details>
 
@@ -663,8 +726,16 @@
               <tr><td>-f / --force</td><td>Don't prompt, just remove</td></tr>
               <tr><td>-r / --recursive</td><td>Remove a directory and everything inside it</td></tr>
             </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Remove a single file</span>
+<span class="p">$</span> rm old_notes.txt
+
+<span class="c"># Remove a directory and everything inside it</span>
+<span class="p">$</span> rm -rf ./tmp_build</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Irreversible. <code>rm -rf</code> on the wrong path can wipe far more than intended — double-check the path before hitting enter, especially with wildcards.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chattr" class="xref" data-target="cmd-chattr">chattr</a></div></div>
         </div>
       </details>
 
@@ -679,8 +750,17 @@
             <div class="field-body"><p>Quick way to dump a config or log file to read directly, or to feed into a pipe for filtering with <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>/<a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> cat [filename]</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Print a file straight to the terminal</span>
+<span class="p">$</span> cat /etc/os-release
+
+<span class="c"># Concatenate two files together, in order</span>
+<span class="p">$</span> cat header.txt body.txt &gt; combined.txt
+
+<span class="c"># Feed into a pipe for filtering</span>
+<span class="p">$</span> cat /etc/passwd | grep root</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-headtail" class="xref" data-target="cmd-headtail">head / tail</a>, <a href="#cmd-manhelp" class="xref" data-target="cmd-manhelp">less / more</a></div></div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-head" class="xref" data-target="cmd-head">head / tail</a>, <a href="#cmd-less" class="xref" data-target="cmd-less">less / more</a></div></div>
         </div>
       </details>
 
@@ -736,6 +816,8 @@
             <div class="field-body"><p>When timing matters — was this config edited before or after the service restarted? <code>stat</code> gives the exact timestamps needed to build that timeline.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> stat &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> stat /etc/ssh/sshd_config</pre></div>
         </div>
       </details>
 
@@ -750,6 +832,9 @@
             <div class="field-body"><p>Catches disguised files — an executable renamed with a <code>.jpg</code> or <code>.txt</code> extension still shows up as what it really is (e.g. an ELF binary or shell script).</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> file &lt;filename&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Confirm a suspicious "image" isn't actually an executable</span>
+<span class="p">$</span> file profile_photo.jpg</pre></div>
         </div>
       </details>
 
@@ -764,38 +849,105 @@
             <div class="field-body"><p>Compare a live config against a known-good backup to spot exactly what an attacker (or a misconfiguration) changed.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> diff &lt;file1&gt; &lt;file2&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># See exactly what changed since the last known-good backup</span>
+<span class="p">$</span> diff /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</pre></div>
         </div>
       </details>
 
-      <details class="cmd" id="cmd-hashsum">
-        <summary><span class="chev">▶</span><code class="cmdname">sha256sum / md5sum</code><span class="cmd-desc">— generate and verify file hashes</span></summary>
+      <details class="cmd" id="cmd-sha256sum">
+        <summary><span class="chev">▶</span><code class="cmdname">sha256sum</code><span class="cmd-desc">— generate and verify file hashes (secure)</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Recommended</span>Prefer this over <a href="#cmd-md5sum" class="xref" data-target="cmd-md5sum">md5sum</a> — MD5 is cryptographically broken and shouldn't be relied on for anything security-critical.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Computes a cryptographic hash of a file's contents. Identical files produce identical hashes; any change to the file, even one byte, produces a completely different hash.</p></div>
+            <div class="field-body"><p>Computes a SHA-256 cryptographic hash of a file's contents. Identical files produce identical hashes; any change to the file, even one byte, produces a completely different hash.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Verify a binary or config hasn't been tampered with by comparing its hash against a known-good value, or confirm a downloaded package matches its published checksum before trusting it.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> sha256sum &lt;file&gt;
-<span class="p">$</span> md5sum &lt;file&gt;</pre></div>
-          <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>Prefer <code>sha256sum</code> over <code>md5sum</code> when possible — MD5 is cryptographically broken and shouldn't be relied on for anything security-critical.</p></div></div>
+            <pre class="example"><span class="p">$</span> sha256sum &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Confirm a binary matches its published checksum</span>
+<span class="p">$</span> sha256sum ./suspicious_binary
+<span class="c"># then compare the output against the vendor's published hash</span></pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-md5sum" class="xref" data-target="cmd-md5sum">md5sum</a></div></div>
         </div>
       </details>
 
-      <details class="cmd" id="cmd-dudf">
-        <summary><span class="chev">▶</span><code class="cmdname">du / df</code><span class="cmd-desc">— disk usage by file/directory vs. by filesystem</span></summary>
+      <details class="cmd" id="cmd-md5sum">
+        <summary><span class="chev">▶</span><code class="cmdname">md5sum</code><span class="cmd-desc">— generate file hashes (legacy, weaker)</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-alternative">
+            <span class="verdict-icon">→</span>
+            <div><span class="verdict-label">Weaker — prefer sha256sum</span>MD5 is cryptographically broken — collisions can be engineered deliberately. Still shows up in older tooling and published checksums, so worth recognizing even though you shouldn't rely on it yourself.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Computes an MD5 hash of a file's contents. Same basic idea as <code>sha256sum</code>, but using an older, weaker algorithm.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Mainly relevant when you're matching against an existing MD5 checksum someone else published (e.g. an older vendor download page) — not something to reach for by choice.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> md5sum &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Compare against a published MD5 checksum</span>
+<span class="p">$</span> md5sum old_installer.exe</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-sha256sum" class="xref" data-target="cmd-sha256sum">sha256sum</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-du">
+        <summary><span class="chev">▶</span><code class="cmdname">du</code><span class="cmd-desc">— disk usage of files &amp; directories</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>du</code> shows how much space specific files/directories are using. <code>df</code> shows overall free/used space per mounted filesystem.</p></div>
+            <div class="field-body"><p>Shows how much disk space specific files or directories are using.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>A disk quietly filling up can mean staged exfiltration data, an oversized log from an attack in progress, or a crypto-miner writing junk to disk.</p></div></div>
+            <div class="field-body"><p>A directory quietly ballooning in size can mean staged exfiltration data, an oversized log from an attack in progress, or a crypto-miner writing junk to disk. Use this to narrow down exactly which directory is responsible once <a href="#cmd-df" class="xref" data-target="cmd-df">df</a> shows a filesystem filling up.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> du -sh &lt;path&gt;   <span class="c"># human-readable total for a path</span>
-<span class="p">$</span> df -h            <span class="c"># human-readable free space per filesystem</span></pre></div>
+            <pre class="example"><span class="p">$</span> du [flags] &lt;path&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-s</td><td>Summarize — total for the path instead of every subfolder</td></tr>
+              <tr><td>-h</td><td>Human-readable sizes (K/M/G instead of raw bytes)</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Human-readable total for a path</span>
+<span class="p">$</span> du -sh /var/log</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-df" class="xref" data-target="cmd-df">df</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-df">
+        <summary><span class="chev">▶</span><code class="cmdname">df</code><span class="cmd-desc">— free/used space per filesystem</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows overall free and used disk space per mounted filesystem — the big-picture view, as opposed to <a href="#cmd-du" class="xref" data-target="cmd-du">du</a>'s per-file/directory detail.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Quick first check when something seems slow or is failing to write — a full disk is a common, easy-to-miss root cause. Once you know a filesystem is nearly full, use <a href="#cmd-du" class="xref" data-target="cmd-du">du</a> to find what's actually consuming the space.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> df [flags]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-h</td><td>Human-readable sizes (K/M/G instead of raw bytes)</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Human-readable free space per filesystem</span>
+<span class="p">$</span> df -h</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-du" class="xref" data-target="cmd-du">du</a></div></div>
         </div>
       </details>
 
@@ -824,7 +976,7 @@
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>A far more powerful and customizable editor than nano, but with a steeper learning curve. Not always installed by default. Has 5 modes and can run commands from inside the editor.</p></div>
+            <div class="field-body"><p>A far more powerful and customizable editor than nano, but with a steeper learning curve. Not always installed by default. Has 5 modes and can run commands from inside the editor. <code>vi</code> is the older, lighter predecessor — <code>vim</code> ("Vi IMproved") is what you'll actually find on most systems, and the same keybindings apply to both.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> vim &lt;filename&gt;</pre></div>
@@ -930,7 +1082,14 @@
             <pre class="example"><span class="p">$</span> awk &lt;options&gt; &lt;script&gt; &lt;input&gt;</pre></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Print the 2nd comma-separated field of a CSV</span>
-<span class="p">$</span> awk -F ',' '{print $2}' data.csv</pre></div>
+<span class="p">$</span> awk -F ',' '{print $2}' data.csv
+
+<span class="c"># Numeric field comparison — only print lines where field 3 (UID)</span>
+<span class="c"># is 1000 or higher, e.g. filtering /etc/passwd to real user</span>
+<span class="c"># accounts and excluding system/service accounts</span>
+<span class="p">$</span> awk -F ':' '$3 >= 1000 {print $1}' /etc/passwd</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a></div></div>
         </div>
       </details>
 
@@ -994,6 +1153,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="p">$</span> chown user1:group1 notes.txt
 <span class="p">$</span> chown root:root notes.txt</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Ownership backs the permission model — handing a file to the wrong owner can grant access you didn't intend, even without touching its permission bits. Worth a second look whenever ownership on a sensitive file changes unexpectedly.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a></div></div>
         </div>
@@ -1027,6 +1188,10 @@
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> lsattr &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Check whether the immutable bit is set before troubleshooting</span>
+<span class="c"># a config file that "won't save"</span>
+<span class="p">$</span> lsattr /etc/ssh/sshd_config</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-chattr" class="xref" data-target="cmd-chattr">chattr</a></div></div>
         </div>
@@ -1035,64 +1200,220 @@
       <div class="cat"><span class="cat-label">User &amp; Access Management</span><span class="cat-line"></span></div>
 
       <details class="cmd" id="cmd-sudo">
-        <summary><span class="chev">▶</span><code class="cmdname">sudo / su</code><span class="cmd-desc">— run as another user or root</span><span class="risk-badge">⚠ risk</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">sudo</code><span class="cmd-desc">— run a single command as root or another user</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Recommended</span>Prefer this over <a href="#cmd-su" class="xref" data-target="cmd-su">su</a> — every use gets logged with the command and user, giving a real audit trail. <code>su</code> hands over a full shell with no per-command record.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>sudo &lt;command&gt;</code> runs a single command as root (or another user). <code>su &lt;user&gt;</code> switches to that user's shell entirely. <code>su -</code> switches and also loads that user's environment.</p></div>
+            <div class="field-body"><p>Runs a single command with root (or another user's) privileges, then returns you to your own account. Requires the calling user's own password, not root's.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> sudo &lt;command&gt;
 <span class="p">$</span> sudo -i        <span class="c"># root login shell</span>
-<span class="p">$</span> sudo su        <span class="c"># root shell via sudo</span>
-<span class="p">$</span> su &lt;user&gt;
-<span class="p">$</span> su -</pre></div>
+<span class="p">$</span> sudo su        <span class="c"># root shell via sudo</span></pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-u user</td><td>Run as a specific user instead of root</td></tr>
+              <tr><td>-l</td><td>List what commands the current user is allowed to run with sudo</td></tr>
+              <tr><td>-k</td><td>Invalidate the cached credential timestamp — next sudo asks for the password again immediately</td></tr>
+            </table></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Who's in the sudo group is one of the first things worth checking on any box — an unexpected member is a red flag. Check <code>/etc/sudoers</code> for rules that shouldn't exist.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-su" class="xref" data-target="cmd-su">su</a>, <a href="#cmd-visudo" class="xref" data-target="cmd-visudo">visudo</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-su">
+        <summary><span class="chev">▶</span><code class="cmdname">su</code><span class="cmd-desc">— switch to another user's full shell</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-alternative">
+            <span class="verdict-icon">→</span>
+            <div><span class="verdict-label">Prefer sudo when possible</span><a href="#cmd-sudo" class="xref" data-target="cmd-sudo">sudo</a> gives a per-command audit trail; <code>su</code> doesn't. Still necessary when you genuinely need a persistent shell as another user, not just one command.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Switches to another user's shell entirely, staying there until you exit. <code>su -</code> also loads that user's full environment (like a real login as them), not just their shell.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> su &lt;user&gt;
+<span class="p">$</span> su -</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-</td><td>Full login simulation — loads the target user's environment, not just their shell</td></tr>
+              <tr><td>-c command</td><td>Run a single command as that user, then return, without landing in a full shell</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Requires knowing the target account's actual password (unlike <code>sudo</code>, which uses your own) — sharing root's password to enable this is itself a hardening concern worth flagging.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-sudo" class="xref" data-target="cmd-sudo">sudo</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-adduser">
-        <summary><span class="chev">▶</span><code class="cmdname">adduser / useradd</code><span class="cmd-desc">— create a new user</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">adduser</code><span class="cmd-desc">— create a new user (interactive)</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
-            <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>adduser</code> is a friendlier wrapper: it prompts for a password and creates a home directory automatically. <code>useradd</code> is the lower-level, less convenient tool — it doesn't create a home directory or set a password unless told to.</p></div>
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for interactive, manual account creation — it's safer by default. For scripting or automation, see <a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a> instead.</div>
           </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>A friendlier wrapper for creating a new user — prompts for a password and creates a home directory automatically.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> adduser &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Prompts for password, creates home dir automatically</span>
+<span class="p">$</span> adduser newintern</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>An unfamiliar account showing up from either of these is worth investigating immediately — check its UID, shell, and home directory.</p></div></div>
+            <div class="field-body"><p>An unfamiliar account showing up is worth investigating immediately — check its UID, shell, and home directory.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>A new account is one of the clearest persistence footholds an attacker can leave behind — treat any account creation you didn't expect as an incident, not a curiosity. When creating one legitimately, confirm the UID range and shell match what's intended.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-useradd">
+        <summary><span class="chev">▶</span><code class="cmdname">useradd</code><span class="cmd-desc">— create a new user (scriptable)</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for scripting and automation — it's lower-level and scriptable. For manual/interactive use, see <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a> instead, which is safer by default.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The lower-level tool for creating a new user — doesn't create a home directory or set a password unless told to via flags.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Built for provisioning scripts, bulk account creation, and configuration-management tools where behavior needs to be explicit and repeatable.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> useradd [flags] &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-m</td><td>Create the home directory (not automatic otherwise)</td></tr>
+              <tr><td>-s shell</td><td>Set the login shell</td></tr>
+              <tr><td>-G group</td><td>Add to an additional group</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> useradd -m -s /bin/bash newintern</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Without <code>-m</code>, no home directory is created — easy to forget, and can cause confusing login behavior later. An unfamiliar account showing up from this is just as worth investigating as one from <code>adduser</code>.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Same persistence-foothold concern as <code>adduser</code> — an unexpected new account is a compromise indicator regardless of which tool created it.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-usermod">
-        <summary><span class="chev">▶</span><code class="cmdname">usermod / id</code><span class="cmd-desc">— modify a user / show identity &amp; groups</span><span class="risk-badge">⚠ risk</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">usermod</code><span class="cmd-desc">— modify an existing user's settings</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>usermod</code> changes an existing user's settings (groups, shell, home directory, lock status). <code>id</code> prints a user's UID, GID, and group memberships — useful for confirming exactly what access an account has.</p></div>
+            <div class="field-body"><p>Changes an existing user's settings — groups, shell, home directory, lock status. Per-user and takes effect immediately.</p></div>
           </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The tool for both directions of account hardening: granting a legitimate account the access it needs (adding to a group), and cutting off a compromised one immediately (locking it) without waiting to delete it outright.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> usermod [flags] &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-aG group</td><td>Add the user to an additional group (without removing them from others)</td></tr>
+              <tr><td>-s shell</td><td>Change the user's login shell</td></tr>
+              <tr><td>-L / -U</td><td>Lock / unlock the account</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Add a user to the sudo group</span>
+<span class="p">$</span> usermod -aG sudo user2
+
+<span class="c"># Confirm what actually took effect</span>
+<span class="p">$</span> id user2
+
+<span class="c"># Lock a compromised account immediately</span>
+<span class="p">$</span> usermod -L user2</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p><code>usermod</code> is not the same as group policy — it's per-user, immediate. UID 0 is always root/admin; services typically run below UID 1000, real user accounts above it.</p></div></div>
+            <div class="field-body"><p>Not the same as group policy — changes are per-user and immediate. Use <a href="#cmd-id" class="xref" data-target="cmd-id">id</a> afterward to confirm exactly what took effect.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Modifying group membership or shell for the wrong account can lock a legitimate user out or hand an attacker more access — verify the target account before running.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-id" class="xref" data-target="cmd-id">id</a>, <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-id">
+        <summary><span class="chev">▶</span><code class="cmdname">id</code><span class="cmd-desc">— show a user's identity &amp; group memberships</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Prints a user's UID, GID, and every group they belong to — read-only, makes no changes.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The fastest way to confirm exactly what access an account actually has, rather than assuming from its name — and the standard way to verify a <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a> change actually took effect.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> id &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> id user2</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-passwd">
-        <summary><span class="chev">▶</span><code class="cmdname">passwd / chpasswd</code><span class="cmd-desc">— set or change a password</span><span class="risk-badge">⚠ risk</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">passwd</code><span class="cmd-desc">— change a password interactively</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for one-off interactive changes. For bulk or scripted password changes, see <a href="#cmd-chpasswd" class="xref" data-target="cmd-chpasswd">chpasswd</a> instead.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>passwd</code> changes a password interactively (for the current user, or for another user when run with privileges). <code>chpasswd</code> reads username:password pairs and sets them in bulk — built for automation/scripting.</p></div>
+            <div class="field-body"><p>Changes a password interactively — for the current user, or for another user when run with privileges.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> passwd            <span class="c"># change your own password</span>
-<span class="p">$</span> passwd user2      <span class="c"># change user2's password</span>
-<span class="p">$</span> echo "user2:newpassword" | chpasswd</pre></div>
-          <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p><code>chpasswd</code> input can also be typed manually and terminated with <code>Ctrl + D</code> instead of piping from <code>echo</code>.</p></div></div>
+<span class="p">$</span> passwd user2      <span class="c"># change user2's password</span></pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Resetting the wrong account's password locks that user out immediately — confirm the username first, and make sure you have another way in before changing your own.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chpasswd" class="xref" data-target="cmd-chpasswd">chpasswd</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-chpasswd">
+        <summary><span class="chev">▶</span><code class="cmdname">chpasswd</code><span class="cmd-desc">— set passwords in bulk (scriptable)</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for bulk or scripted password changes. For a single interactive change, see <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a> instead.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Reads username:password pairs and sets them in bulk — built for automation and scripting rather than interactive use.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> echo "user2:newpassword" | chpasswd</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Single account (same as the syntax line above)</span>
+<span class="p">$</span> echo "user2:newpassword" | chpasswd
+
+<span class="c"># Actual bulk use: set the same password for every username</span>
+<span class="c"># listed in a file, one per line</span>
+<span class="p">$</span> awk '{print $1":newpassword"}' users | chpasswd</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Input can also be typed manually and terminated with <code>Ctrl + D</code> instead of piping from <code>echo</code>. The <code>awk</code> example above is what makes this genuinely a bulk tool — reformatting a plain list of usernames into <code>username:password</code> pairs before handing them off.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Resetting the wrong account's password locks that user out immediately — confirm the username first, and make sure you have another way in before changing your own.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a></div></div>
         </div>
       </details>
 
@@ -1107,23 +1428,46 @@
             <div class="field-body"><p>The correct way to change sudo rules. Editing <code>/etc/sudoers</code> directly with <a href="#cmd-nano" class="xref" data-target="cmd-nano">nano</a>/<a href="#cmd-vim" class="xref" data-target="cmd-vim">vim</a> and introducing a syntax error can lock <em>every</em> account out of sudo at once.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> visudo</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Inside the editor, a line like this grants user2 full sudo:</span>
+<span class="c"># user2 ALL=(ALL:ALL) ALL</span>
+<span class="p">$</span> visudo</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Uses whatever <code>$EDITOR</code> is set to (often <code>nano</code> or <code>vim</code>). If you save a syntax error, <code>visudo</code> refuses to write the file and asks whether to re-edit, discard, or force the save — always choose re-edit or discard.</p></div></div>
         </div>
       </details>
 
-      <details class="cmd" id="cmd-acl">
-        <summary><span class="chev">▶</span><code class="cmdname">getfacl / setfacl</code><span class="cmd-desc">— view and set fine-grained Access Control Lists</span></summary>
+      <details class="cmd" id="cmd-getfacl">
+        <summary><span class="chev">▶</span><code class="cmdname">getfacl</code><span class="cmd-desc">— view a file's Access Control List</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Extends permissions beyond the basic owner/group/others model — lets you grant a specific user or group access to a file without changing its base permissions.</p></div>
+            <div class="field-body"><p>Displays the ACL entries on a file — extra user/group permissions layered on top of the basic owner/group/others model.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>When a hardening task needs more precision than <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>/<a href="#cmd-chown" class="xref" data-target="cmd-chown">chown</a> can express — e.g. one extra user needs read access without changing group ownership. Also worth checking during an audit: ACLs are easy to miss since <code>ls -l</code> doesn't show them fully.</p></div></div>
+            <div class="field-body"><p>Worth checking during any permissions audit: ACLs are easy to miss since <a href="#cmd-ls" class="xref" data-target="cmd-ls">ls -l</a> doesn't show them in full — only a trailing <code>+</code> hints one exists.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> getfacl &lt;file&gt;
-<span class="p">$</span> setfacl -m u:&lt;user&gt;:rw &lt;file&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> getfacl &lt;file&gt;</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>A file with ACLs set shows a <code>+</code> at the end of its permission string in <code>ls -l</code> — easy to miss if you're not looking for it.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-setfacl" class="xref" data-target="cmd-setfacl">setfacl</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-setfacl">
+        <summary><span class="chev">▶</span><code class="cmdname">setfacl</code><span class="cmd-desc">— set a fine-grained Access Control entry</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Grants a specific extra user or group access to a file without changing its base owner/group/others permissions.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Use when a hardening task needs more precision than <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>/<a href="#cmd-chown" class="xref" data-target="cmd-chown">chown</a> can express — e.g. one extra user needs read access without changing group ownership.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> setfacl -m u:&lt;user&gt;:rw &lt;file&gt;</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-getfacl" class="xref" data-target="cmd-getfacl">getfacl</a></div></div>
         </div>
       </details>
 
@@ -1138,6 +1482,8 @@
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Core hardening/hunting command — scan running processes for anything unexpected, unusually named, or running from a strange path.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ps [options]</pre></div>
           <div class="field"><div class="field-label">Relevant Options</div>
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
@@ -1162,14 +1508,32 @@
       </details>
 
       <details class="cmd" id="cmd-kill">
-        <summary><span class="chev">▶</span><code class="cmdname">kill</code><span class="cmd-desc">— terminate a process by ID</span><span class="risk-badge">⚠ risk</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">kill</code><span class="cmd-desc">— send a signal to a process, most often to stop it</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Try SIGTERM first</span>Default to <code>kill -15</code> (SIGTERM) before reaching for <code>-9</code>. SIGTERM asks the process to shut down cleanly; SIGKILL gives it no chance to. Only escalate to <code>-9</code> if the process ignores SIGTERM and won't die.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Sends a signal to a process, most commonly to terminate it. <code>kill -9</code> sends SIGKILL — an immediate, forceful kill that the process can't intercept or clean up after.</p></div>
+            <div class="field-body"><p>Sends a signal to a process — most often to terminate it, though signals can also pause, resume, or reload one. Which signal you send determines whether the process gets a chance to clean up first.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> kill -9 &lt;PID&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> kill -&lt;signal&gt; &lt;PID&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Signal</th><th>What it does</th></tr>
+              <tr><td>-15 (SIGTERM)</td><td>Politely asks the process to terminate — it can catch this and clean up first. Default signal if none is specified.</td></tr>
+              <tr><td>-9 (SIGKILL)</td><td>Forces immediate termination — the process can't intercept or clean up. Last resort.</td></tr>
+              <tr><td>-1 (SIGHUP)</td><td>Traditionally "hang up" — many daemons treat this as "reload your config" instead of "die"</td></tr>
+              <tr><td>-19 (SIGSTOP)</td><td>Pause the process without killing it (resume later with <code>-18</code>/SIGCONT)</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Ask nicely first</span>
+<span class="p">$</span> kill -15 1337
+
+<span class="c"># Only if it's still alive a moment later</span>
+<span class="p">$</span> kill -9 1337</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>SIGKILL gives the process no chance to shut down gracefully — it can leave lock files, corrupt in-progress writes, or drop open connections uncleanly. Use it when the process needs to die immediately, not as a default first move.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1185,7 +1549,17 @@
             <div class="field-body"><p>Searches running processes by name and returns matching PIDs — faster than piping <code>ps aux</code> through <code>grep</code> for the same result.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> pgrep &lt;process_name&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> pgrep [flags] &lt;process_name&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-u user</td><td>Only match processes owned by a specific user</td></tr>
+              <tr><td>-f</td><td>Match against the full command line, not just the process name</td></tr>
+              <tr><td>-l</td><td>List the matched process name alongside each PID</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Find the PID(s) of a running SSH daemon</span>
+<span class="p">$</span> pgrep sshd</pre></div>
         </div>
       </details>
 
@@ -1197,7 +1571,7 @@
             <div class="field-body"><p>Lists open files — and on Linux, network sockets count as files too — along with the process holding each one open. The connective tissue between "what's listening on this port" and "which exact process that is."</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>Pair with <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat/ss</a> when you find a suspicious open port — <code>lsof</code> tells you exactly which process and PID owns it. Also useful for finding which process is holding a file open (e.g. one you're trying to delete or that's writing to disk unexpectedly).</p></div></div>
+            <div class="field-body"><p>Pair with <a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a> when you find a suspicious open port — <code>lsof</code> tells you exactly which process and PID owns it. Also useful for finding which process is holding a file open (e.g. one you're trying to delete or that's writing to disk unexpectedly).</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> lsof [options]</pre></div>
           <div class="field"><div class="field-label">Relevant Options</div>
@@ -1214,7 +1588,7 @@
 <span class="c"># Every file/socket a suspicious PID has open</span>
 <span class="p">$</span> lsof -p 1337</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat / ss</a>, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a></div></div>
+            <div class="field-body"><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a>, <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a>, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a></div></div>
         </div>
       </details>
 
@@ -1229,6 +1603,8 @@
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Central place to review boot logs, service failures, and authentication events on systemd-based systems — often faster than hunting through individual log files.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> journalctl [options]</pre></div>
           <div class="field"><div class="field-label">Relevant Options</div>
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
@@ -1262,20 +1638,73 @@
         </div>
       </details>
 
-      <details class="cmd" id="cmd-lastlog">
-        <summary><span class="chev">▶</span><code class="cmdname">who / w / last / lastlog</code><span class="cmd-desc">— see who's logged in and login history</span></summary>
+      <details class="cmd" id="cmd-w">
+        <summary><span class="chev">▶</span><code class="cmdname">w</code><span class="cmd-desc">— who's logged in, and what they're doing</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Recommended</span>Prefer this over <a href="#cmd-who" class="xref" data-target="cmd-who">who</a> — it shows everything <code>who</code> does, plus what each user is currently running and how long they've been idle.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows who's currently logged in, where from, how long they've been idle, and what command they're running.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Fast way to spot an account logging in from an unexpected location or at an unexpected time — and unlike <code>who</code>, it also shows what they're actively doing right now.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> w</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-who" class="xref" data-target="cmd-who">who</a>, <a href="#cmd-last" class="xref" data-target="cmd-last">last</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-who">
+        <summary><span class="chev">▶</span><code class="cmdname">who</code><span class="cmd-desc">— who's currently logged in</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-alternative">
+            <span class="verdict-icon">→</span>
+            <div><span class="verdict-label">Prefer w</span><a href="#cmd-w" class="xref" data-target="cmd-w">w</a> shows the same information plus current activity and idle time. Still fine to use when you only want the simpler list.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows who's currently logged into the system and where from.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> who</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-w" class="xref" data-target="cmd-w">w</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-last">
+        <summary><span class="chev">▶</span><code class="cmdname">last</code><span class="cmd-desc">— login/logout history</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>who</code>/<code>w</code> show who's currently logged in (and what they're doing). <code>last</code> shows a history of logins/logouts. <code>lastlog</code> shows the most recent login for every account, including ones that have never logged in.</p></div>
+            <div class="field-body"><p>Shows a history of logins and logouts — a session-by-session record, not just the current moment.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>Fast way to spot an account logging in from an unexpected location, at an unexpected time, or an account that suddenly has activity after sitting dormant.</p></div></div>
+            <div class="field-body"><p>Look for logins at odd hours, from unfamiliar sources, or sessions that don't match the account's normal pattern.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> who
-<span class="p">$</span> w
-<span class="p">$</span> last
-<span class="p">$</span> lastlog</pre></div>
+            <pre class="example"><span class="p">$</span> last</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-lastlog" class="xref" data-target="cmd-lastlog">lastlog</a>, <a href="#cmd-w" class="xref" data-target="cmd-w">w</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-lastlog">
+        <summary><span class="chev">▶</span><code class="cmdname">lastlog</code><span class="cmd-desc">— most recent login per account</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows the most recent login for every account on the system, including accounts that have never logged in at all — unlike <a href="#cmd-last" class="xref" data-target="cmd-last">last</a>, which only shows a session history rather than a per-account summary.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>A dormant service account suddenly showing a recent login is a strong compromise indicator — this is the fastest way to spot that account-by-account.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> lastlog</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-last" class="xref" data-target="cmd-last">last</a></div></div>
         </div>
       </details>
 
@@ -1320,10 +1749,15 @@
 <span class="c"># Fully disable a service so it can't be restarted</span>
 <span class="p">$</span> systemctl mask &lt;service&gt;
 
+<span class="c"># Make sure a legitimate service survives a reboot</span>
+<span class="p">$</span> systemctl enable nginx
+
 <span class="c"># Legacy init.d fallback (rare — mostly older/minimal distros)</span>
 <span class="p">$</span> /etc/init.d/sshd status</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Stopping or masking the wrong service (e.g. your own SSH access) can lock you out of the box remotely. Confirm the service name and your access path before disabling anything remote-facing.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a>, <a href="#tool-cron" class="xref" data-target="tool-cron">Cron</a>, <a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">apt / yum / apk / pacman</a>, <a href="#cmd-ufw" class="xref" data-target="cmd-ufw">ufw / firewall-cmd</a></div></div>
         </div>
       </details>
 
@@ -1332,7 +1766,11 @@
       <details class="cmd" id="cmd-pkgmgr">
         <summary><span class="chev">▶</span><code class="cmdname">apt / yum / apk / pacman</code><span class="cmd-desc">— install, update &amp; remove software (distro variants)</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚙</span>
+            <div><span class="verdict-label">Platform-Determined — Not a Choice</span>Kept as one entry on purpose: which of these exists on a box is fixed by its distro, not something you pick. There's nothing to prefer — you use whichever one is actually installed.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
             <div class="field-body"><p>Every distro family ships its own package manager for installing, updating, and removing software. The action is the same across all of them; only the command name and exact flags change.</p></div>
           </div>
@@ -1371,7 +1809,7 @@
             <div class="field-body"><p>Edits the current user's cron table — a list of commands set to run automatically at defined intervals (every day/week/month, etc).</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>Cron is a classic persistence mechanism — always check for scripts that shouldn't be there. See the full write-up under Programs &amp; Tools for the broader cron system, including <code>/etc/cron.d</code>.</p></div></div>
+            <div class="field-body"><p>Cron is a classic persistence mechanism — always check for scripts that shouldn't be there. See the full write-up under <a href="#tool-cron" class="xref" data-target="tool-cron">Cron</a> in Programs &amp; Tools for the broader system, including <code>/etc/cron.d</code>.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> crontab -e</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
@@ -1382,7 +1820,7 @@
       <div class="cat"><span class="cat-label">Networking</span><span class="cat-line"></span></div>
 
       <details class="cmd" id="cmd-ip">
-        <summary><span class="chev">▶</span><code class="cmdname">ip</code><span class="cmd-desc">— show and configure network interfaces &amp; routes</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">ip</code><span class="cmd-desc">— show and configure network interfaces &amp; routes</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
@@ -1405,6 +1843,8 @@
 <span class="p">$</span> ip route add default via 192.168.1.1</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Changes made this way are temporary — they don't survive a reboot on their own. See <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager / systemd-networkd / netplan</a> for making them persistent, and the CIDR/Subnet Mask and Default Gateway glossary entries if the <code>/24</code> notation is unfamiliar.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Adding the wrong route or removing the address you're connected through can cut your own remote session immediately. If you're working over SSH, double-check the target interface and address before running <code>addr add/del</code> or <code>route add</code>.</p></div></div>
         </div>
       </details>
 
@@ -1429,18 +1869,26 @@
 <span class="p">$</span> ping -c 3 192.168.1.1</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Some hosts (Windows especially) block ICMP by default, so a failed ping doesn't always mean the host is down or unreachable — it may just be filtered.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ip" class="xref" data-target="cmd-ip">ip</a></div></div>
         </div>
       </details>
 
-      <details class="cmd" id="cmd-netstat">
-        <summary><span class="chev">▶</span><code class="cmdname">netstat / ss</code><span class="cmd-desc">— view network connections &amp; listening ports</span></summary>
+      <details class="cmd" id="cmd-ss">
+        <summary><span class="chev">▶</span><code class="cmdname">ss</code><span class="cmd-desc">— view network connections &amp; listening ports</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Recommended</span>Prefer this over <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a> — actively maintained and usually pre-installed, while <code>netstat</code> is legacy and often needs the <code>net-tools</code> package added separately.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Shows active network connections, listening ports, and the processes behind them. <code>netstat</code> may require installing <code>net-tools</code> on newer distros; <code>ss</code> is the modern built-in replacement.</p></div>
+            <div class="field-body"><p>Reads socket state directly from the kernel to show active network connections and listening ports — the modern replacement for <code>netstat</code>.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Confirm exactly what's listening on the box and where connections are going — a fast way to spot an unexpected open port or an outbound connection to somewhere it shouldn't be. Pair with <a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a> to identify exactly which process owns a given port.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ss [options]</pre></div>
           <div class="field"><div class="field-label">Relevant Options</div>
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
@@ -1452,10 +1900,43 @@
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Everything listening, with the process that owns it</span>
-<span class="p">$</span> netstat -tulnp
 <span class="p">$</span> ss -tulnp</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a></div></div>
+            <div class="field-body"><a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a>, <a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-netstat">
+        <summary><span class="chev">▶</span><code class="cmdname">netstat</code><span class="cmd-desc">— view network connections &amp; listening ports (legacy)</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-alternative">
+            <span class="verdict-icon">→</span>
+            <div><span class="verdict-label">Legacy — prefer ss</span><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a> is the modern replacement and does the same job. Still worth recognizing — some older or minimal systems only have this one.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows active network connections, listening ports, and the processes behind them. The traditional tool for this job, largely superseded by <code>ss</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Same job as <code>ss</code> — reach for this when <code>ss</code> isn't available on the box you're on.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> netstat [options]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-t</td><td>TCP connections</td></tr>
+              <tr><td>-u</td><td>UDP connections</td></tr>
+              <tr><td>-l</td><td>Listening sockets only</td></tr>
+              <tr><td>-n</td><td>Numeric — skip DNS resolution</td></tr>
+              <tr><td>-p</td><td>Show the owning process/PID</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Everything listening, with the process that owns it</span>
+<span class="p">$</span> netstat -tulnp</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>May require installing the <code>net-tools</code> package on newer distros — it's not always included by default anymore.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a>, <a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a></div></div>
         </div>
       </details>
 
@@ -1484,6 +1965,8 @@
 
 <span class="c"># Save a capture to review later</span>
 <span class="p">$</span> tcpdump -i eth0 -w capture.pcap</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a>, <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a>, <a href="#cmd-nmap" class="xref" data-target="cmd-nmap">nmap</a></div></div>
         </div>
       </details>
 
@@ -1496,16 +1979,37 @@
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Run against your own boxes to verify only intended ports are exposed — treat any unexpected open port as something to investigate immediately.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> nmap [options] &lt;target&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-sV</td><td>Detect the service/version running on each open port</td></tr>
+              <tr><td>-p-</td><td>Scan all 65535 ports, not just the common ones</td></tr>
+              <tr><td>-A</td><td>Aggressive scan — OS detection, version detection, scripts</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Quick scan of this host's own exposed ports</span>
+<span class="p">$</span> nmap localhost
+
+<span class="c"># Full port range with service detection against another host</span>
+<span class="p">$</span> nmap -p- -sV 192.168.1.20</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a>, <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a>, <a href="#cmd-tcpdump" class="xref" data-target="cmd-tcpdump">tcpdump</a></div></div>
         </div>
       </details>
 
       <div class="cat"><span class="cat-label">Firewall</span><span class="cat-line"></span></div>
-      <div class="field-body" style="font-size:12.5px;color:var(--text-dim);padding:2px 0 8px;">The full <code>iptables</code> rule engine is covered under <strong>Programs &amp; Tools</strong>. The two commands below are simpler front-ends for it, and vary by distro.</div>
+      <div class="field-body" style="font-size:12.5px;color:var(--text-dim);padding:2px 0 8px;">The full <a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> rule engine is covered under <strong>Programs &amp; Tools</strong>. The two commands below are simpler front-ends for it, and vary by distro.</div>
 
       <details class="cmd" id="cmd-ufw">
-        <summary><span class="chev">▶</span><code class="cmdname">ufw / firewall-cmd</code><span class="cmd-desc">— simplified firewall front-ends (distro variants)</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">ufw / firewall-cmd</code><span class="cmd-desc">— simplified firewall front-ends (distro variants)</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚙</span>
+            <div><span class="verdict-label">Platform-Determined — Not a Choice</span>Kept as one entry on purpose: Debian/Ubuntu gets <code>ufw</code>, RHEL/CentOS/Fedora gets <code>firewall-cmd</code>. There's nothing to prefer — you use whichever one your distro ships with.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
             <div class="field-body"><p>Friendlier commands that sit on top of the underlying kernel firewall so you don't have to write raw <a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> rules by hand. <code>ufw</code> (Uncomplicated Firewall) is Debian/Ubuntu's default. <code>firewalld</code>, controlled via <code>firewall-cmd</code>, is RHEL/CentOS/Fedora's default.</p></div>
           </div>
@@ -1527,6 +2031,8 @@
 <span class="p">$</span> firewall-cmd --list-all</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Either one may not be installed/enabled by default — the raw <code>iptables</code> rules are always underneath, so it's worth checking both layers when auditing a firewall.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Running <code>ufw enable</code> without an allow rule for your own access first (e.g. SSH) can lock you out immediately, the same way a raw <code>iptables</code> default-deny policy can. Add the rules you need before enabling.</p></div></div>
         </div>
       </details>
 
@@ -1552,52 +2058,122 @@
 <span class="p">$</span> sysctl -w net.ipv4.tcp_syncookies=1</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Live changes with <code>-w</code> don't survive a reboot — and some kernel parameters can break networking or services if set incorrectly. Test before writing changes into <code>/etc/sysctl.conf</code> permanently.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a>, <a href="#cmd-ip" class="xref" data-target="cmd-ip">ip</a></div></div>
         </div>
       </details>
 
       <div class="cat"><span class="cat-label">Help &amp; Documentation</span><span class="cat-line"></span></div>
 
-      <details class="cmd" id="cmd-manhelp">
-        <summary><span class="chev">▶</span><code class="cmdname">man / --help / less / more</code><span class="cmd-desc">— getting help without leaving the terminal</span></summary>
+      <details class="cmd" id="cmd-man">
+        <summary><span class="chev">▶</span><code class="cmdname">man</code><span class="cmd-desc">— open a command's full manual page</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>man &lt;command&gt;</code> opens the full manual page for a command. <code>--help</code> as a flag on most commands prints a short usage summary. <code>less</code>/<code>more</code> page through long output or files one screen at a time — essential on headless servers where you can't just scroll a GUI window.</p></div>
+            <div class="field-body"><p>Opens the full manual page for a command — every flag, every option, in detail. For a quicker summary instead of the full manual, most commands also support a <code>--help</code> flag that prints a short usage reference directly in the terminal.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> man &lt;command&gt;
-<span class="p">$</span> &lt;command&gt; --help
-<span class="p">$</span> less &lt;file&gt;</pre></div>
+<span class="p">$</span> &lt;command&gt; --help</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> man iptables
+<span class="p">$</span> ss --help</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>--help</code> isn't a separate program — it's a convention most commands honor as a flag, giving a fast summary when the full <code>man</code> page is more than you need.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-less" class="xref" data-target="cmd-less">less / more</a></div></div>
         </div>
       </details>
 
-      <details class="cmd" id="cmd-headtail">
-        <summary><span class="chev">▶</span><code class="cmdname">head / tail</code><span class="cmd-desc">— show the start or end of a file</span></summary>
+      <details class="cmd" id="cmd-less">
+        <summary><span class="chev">▶</span><code class="cmdname">less / more</code><span class="cmd-desc">— page through long output or files</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-preferred">
+            <span class="verdict-icon">✓</span>
+            <div><span class="verdict-label">Recommended: less</span>Doesn't load the whole file into memory, supports scrolling backward, and lets you search with <code>/</code> — <code>more</code> can only go forward. Prefer <code>less</code> whenever both are available.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Pages through long output or files one screen at a time — essential on headless servers where you can't just scroll a GUI window. <code>more</code> is the older, more limited pager; <code>less</code> is the modern replacement (the name is a joke — "less is more").</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The default way to read a large log file without pulling the whole thing into the terminal at once — pairs naturally with <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a> in a pipe when you already know what you're looking for.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> less &lt;file&gt;
+<span class="p">$</span> more &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> less /var/log/auth.log</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-man" class="xref" data-target="cmd-man">man</a>, <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-head">
+        <summary><span class="chev">▶</span><code class="cmdname">head</code><span class="cmd-desc">— show the start of a file</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>head</code> prints the first lines of a file; <code>tail</code> prints the last lines. Fast way to check a huge log file without opening the whole thing.</p></div>
+            <div class="field-body"><p>Prints the first lines of a file — fast way to check a huge file's header/format without opening the whole thing.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> head &lt;file&gt;
-<span class="p">$</span> tail &lt;file&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> head &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-n N</td><td>Show N lines instead of the default 10</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># First 20 lines of a CSV, e.g. to check the header row</span>
+<span class="p">$</span> head -n 20 export.csv</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-tail" class="xref" data-target="cmd-tail">tail</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-tail">
+        <summary><span class="chev">▶</span><code class="cmdname">tail</code><span class="cmd-desc">— show the end of a file</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Prints the last lines of a file — fast way to check a huge log file's most recent entries without opening the whole thing.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The <code>-f</code> follow flag turns this into a live log monitor — one of the most-used commands during active investigation.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> tail &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-n N</td><td>Show N lines instead of the default 10</td></tr>
+              <tr><td>-f</td><td>Follow the file live as new lines are appended</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Live-tail auth log as new entries come in</span>
+<span class="p">$</span> tail -f /var/log/auth.log
+
+<span class="c"># Just the last 50 lines</span>
+<span class="p">$</span> tail -n 50 /var/log/syslog</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-head" class="xref" data-target="cmd-head">head</a></div></div>
         </div>
       </details>
 
       <div class="cat"><span class="cat-label">Environment &amp; Shell</span><span class="cat-line"></span></div>
 
-      <details class="cmd" id="cmd-pathenv">
-        <summary><span class="chev">▶</span><code class="cmdname">$PATH / env</code><span class="cmd-desc">— command search order &amp; environment variables</span></summary>
+      <details class="cmd" id="cmd-env">
+        <summary><span class="chev">▶</span><code class="cmdname">env</code><span class="cmd-desc">— list all environment variables (including $PATH)</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><code>$PATH</code> is the environment variable that defines which directories the shell searches, and in what order, when you type a command name. <code>env</code> lists every currently set environment variable.</p></div>
+            <div class="field-body"><p>Lists every currently set environment variable — including <code>$PATH</code>, the variable that defines which directories the shell searches, and in what order, when you type a command name. See the Reference/Glossary entry for <code>$PATH</code> if the concept itself needs more context.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>An attacker can plant a malicious binary earlier in <code>$PATH</code> than the real one, so a common command silently runs their version instead. Worth checking <code>$PATH</code> order if something behaves unexpectedly.</p></div></div>
+            <div class="field-body"><p>An attacker can plant a malicious binary earlier in <code>$PATH</code> than the real one, so a common command silently runs their version instead. Worth checking <code>$PATH</code> order specifically if something behaves unexpectedly.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> echo $PATH
-<span class="p">$</span> env</pre></div>
+            <pre class="example"><span class="p">$</span> env             <span class="c"># every environment variable</span>
+<span class="p">$</span> echo $PATH      <span class="c"># just $PATH specifically</span></pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a>, <a href="#cmd-bashscript" class="xref" data-target="cmd-bashscript">bash scripts</a></div></div>
         </div>
       </details>
 
@@ -1608,8 +2184,18 @@
             <div class="field-label">Definition</div>
             <div class="field-body"><p>Defines a shorthand name that expands to a longer command when typed.</p></div>
           </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> alias &lt;name&gt;='&lt;command&gt;'</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Shortcut for a long-winded listening-ports check</span>
+<span class="p">$</span> alias ports='ss -tulnp'
+
+<span class="c"># See every alias currently defined</span>
+<span class="p">$</span> alias</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Worth checking a shell's aliases when investigating a box — an alias can quietly redirect a trusted command name to something malicious.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-env" class="xref" data-target="cmd-env">env</a>, <a href="#cmd-bashscript" class="xref" data-target="cmd-bashscript">bash scripts</a></div></div>
         </div>
       </details>
 
@@ -1628,6 +2214,8 @@
 <span class="p">$</span> for line in $(cat poem); do echo $line; done</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p><code>./file_name</code> requires the file to have the executable (<code>x</code>) permission bit set — see <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>. <code>bash file_name</code> works without it.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>, <a href="#cmd-env" class="xref" data-target="cmd-env">env</a>, <a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a></div></div>
         </div>
       </details>
 
@@ -1691,6 +2279,8 @@
 <span class="p">$</span> iptables-restore &lt; /etc/iptables/rules.v4</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p><code>iptables -F</code> only use this with complete understanding — it can affect other services in unexpected ways. Document any flush for the team. Setting a default DROP policy <em>before</em> your allow rules are in place can lock out your own remote access — write the ACCEPT rules for established connections and your own management access first, then set the deny policy last.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ufw" class="xref" data-target="cmd-ufw">ufw / firewall-cmd</a>, <a href="#cmd-ip" class="xref" data-target="cmd-ip">ip</a>, <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager</a></div></div>
         </div>
       </details>
 
@@ -1755,11 +2345,13 @@
 <span class="p">$</span> ls /etc/cron.d</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>If a scheduled task has no legitimate use, disable it — <code>systemctl stop/disable/mask</code> the cron service is a last resort if the whole subsystem is compromised, but usually removing the specific malicious entry is the right move.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-crontab" class="xref" data-target="cmd-crontab">crontab</a>, <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="tool-netmgr">
-        <summary><span class="chev">▶</span><code class="cmdname">NetworkManager</code><span class="cmd-desc">— network connection management service</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">NetworkManager</code><span class="cmd-desc">— network connection management service</span><span class="risk-badge">⚠ risk</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
@@ -1767,6 +2359,22 @@
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Make sure the relevant service is actually running (check with <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a>) before troubleshooting connectivity — and always verify network changes actually applied and persisted.</p></div></div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro / tool</th><th>Example command</th></tr>
+              <tr><td>NetworkManager (most desktop-oriented distros, RHEL/Fedora)</td><td><code>nmcli device status</code></td></tr>
+              <tr><td>netplan (Ubuntu server)</td><td><code>netplan apply</code></td></tr>
+              <tr><td>systemd-networkd (minimal/server distros)</td><td><code>systemctl restart systemd-networkd</code></td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Check which one is actually managing this box</span>
+<span class="p">$</span> systemctl status NetworkManager
+<span class="p">$</span> systemctl status systemd-networkd
+
+<span class="c"># Apply a netplan config change</span>
+<span class="p">$</span> netplan apply</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Restarting or reloading the networking service itself can drop your current connection if you're accessing the box remotely — the service has to tear down and rebuild the interface it's serving you through. Have local/console access as a fallback before restarting it on a box you can't afford to lose.</p></div></div>
         </div>
       </details>
 
@@ -1779,6 +2387,9 @@
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>The real answer to "who touched this file, and when." Set a watch rule on a critical file (like <code>/etc/passwd</code> or <code>/etc/sudoers</code>) and get a log entry for every read, write, or attribute change against it — including by root.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> auditctl -w &lt;file&gt; -p &lt;perms&gt; -k &lt;key&gt;
+<span class="p">$</span> ausearch -k &lt;key&gt;</pre></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Watch a critical file for any write/attribute change</span>
 <span class="p">$</span> auditctl -w /etc/passwd -p wa -k passwd_watch
@@ -1790,20 +2401,47 @@
         </div>
       </details>
 
-      <details class="cmd" id="tool-rootkit">
-        <summary><span class="chev">▶</span><code class="cmdname">chkrootkit / rkhunter</code><span class="cmd-desc">— rootkit and backdoor scanners</span></summary>
+      <details class="cmd" id="tool-chkrootkit">
+        <summary><span class="chev">▶</span><code class="cmdname">chkrootkit</code><span class="cmd-desc">— rootkit and backdoor scanner</span></summary>
         <div class="cmd-body">
-          <div class="field" style="margin-top:10px;">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Defense-in-Depth</span>Not a choice between this and <a href="#tool-rkhunter" class="xref" data-target="tool-rkhunter">rkhunter</a> — they use different detection signatures and catch different things. Standard practice is to run both, not pick one.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Scan the system for known rootkit signatures, common backdoor techniques, and suspicious system binary modifications. Not foolproof — signature-based — but a fast first pass.</p></div>
+            <div class="field-body"><p>Scans the system for known rootkit signatures, common backdoor techniques, and suspicious system binary modifications. Not foolproof — signature-based — but a fast first pass.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Quick sanity check on a box you've inherited or suspect is compromised — run early, before you've made other changes that could mask what the scan is looking for.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> chkrootkit
-<span class="p">$</span> rkhunter --check</pre></div>
+            <pre class="example"><span class="p">$</span> chkrootkit</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>Treat a clean scan as a data point, not proof of a clean system — these tools only catch known patterns. Pair with manual review (<a href="#cmd-find" class="xref" data-target="cmd-find">find</a> for SUID binaries, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps --forest</a> for odd process trees) rather than relying on either alone.</p></div></div>
+            <div class="field-body"><p>Treat a clean scan as a data point, not proof of a clean system — signature-based tools only catch known patterns. Pair with manual review (<a href="#cmd-find" class="xref" data-target="cmd-find">find</a> for SUID binaries, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps --forest</a> for odd process trees) rather than relying on scans alone.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#tool-rkhunter" class="xref" data-target="tool-rkhunter">rkhunter</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-rkhunter">
+        <summary><span class="chev">▶</span><code class="cmdname">rkhunter</code><span class="cmd-desc">— rootkit hunter (second, complementary scanner)</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Defense-in-Depth</span>Not a choice between this and <a href="#tool-chkrootkit" class="xref" data-target="tool-chkrootkit">chkrootkit</a> — they use different detection signatures and catch different things. Standard practice is to run both, not pick one.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Scans the system for rootkits, backdoors, and local exploits using its own separate signature database and set of checks from <code>chkrootkit</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Same purpose as <code>chkrootkit</code> — running both on the same box gives broader coverage than either alone, since neither one catches everything.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> rkhunter --check</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Also worth running <code>rkhunter --update</code> periodically so its signature database doesn't go stale.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#tool-chkrootkit" class="xref" data-target="tool-chkrootkit">chkrootkit</a></div></div>
         </div>
       </details>
 
@@ -2047,7 +2685,7 @@
 
         <div class="glossary-item">
         <dt>Environment Variables</dt>
-        <dd>Variables like <code>$PATH</code> that shape how the shell behaves — in this case, which directories it searches (and in what order) when resolving a command name. View them all with <code>env</code>.</dd>
+        <dd>Variables like <code>$PATH</code> that shape how the shell behaves — in this case, which directories it searches (and in what order) when resolving a command name. View them all with <a href="#cmd-env" class="xref" data-target="cmd-env">env</a>.</dd>
         </div>
 
         <div class="glossary-item">
@@ -2072,7 +2710,7 @@
 
         <div class="glossary-item">
         <dt>ACL (Access Control List)</dt>
-        <dd>A finer-grained permission layer on top of the standard owner/group/others model, letting you grant access to a specific extra user or group. Managed with <a href="#cmd-acl" class="xref" data-target="cmd-acl">getfacl/setfacl</a>; shown as a trailing <code>+</code> in <code>ls -l</code> output.</dd>
+        <dd>A finer-grained permission layer on top of the standard owner/group/others model, letting you grant access to a specific extra user or group. Managed with <a href="#cmd-getfacl" class="xref" data-target="cmd-getfacl">getfacl</a>/<a href="#cmd-setfacl" class="xref" data-target="cmd-setfacl">setfacl</a>; shown as a trailing <code>+</code> in <code>ls -l</code> output.</dd>
         </div>
 
         <div class="glossary-item">
