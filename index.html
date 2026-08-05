@@ -19,6 +19,8 @@
     --red-dim:    #7a2c2e;
     --blue:       #60a5fa;
     --blue-dim:   #2c4a75;
+    --violet:     #a78bfa;
+    --violet-dim: #4c3d80;
     --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
   }
   *{box-sizing:border-box;}
@@ -62,6 +64,7 @@
     margin-bottom:20px;
   }
   .legend .risk-badge{margin-right:4px;}
+  .legend .distro-badge{margin:0 4px;}
 
   /* toolbar */
   .toolbar{
@@ -296,6 +299,15 @@
     border-radius:9px;
     white-space:nowrap;
   }
+  .distro-badge{
+    font-size:10px;
+    color:var(--violet);
+    border:1px solid var(--violet-dim);
+    background:rgba(167,139,250,0.08);
+    padding:1px 6px;
+    border-radius:9px;
+    white-space:nowrap;
+  }
   @keyframes flashHighlight{
     0%{background:rgba(74,222,128,0.18);}
     100%{background:transparent;}
@@ -495,7 +507,7 @@
   <div class="prompt">user@cyberdefense:~$ ./cheatsheet --load<span class="cursor"></span></div>
   <h1><span class="bracket">[</span>Cyber Defense Linux Field Guide<span class="bracket">]</span></h1>
   <div class="subtitle">Command reference &amp; response playbook for defending Linux systems</div>
-  <div class="legend"><span class="risk-badge">⚠ risk</span> = destructive, irreversible, or lockout-prone — read the caution note before running.</div>
+  <div class="legend"><span class="risk-badge">⚠ risk</span> = destructive, irreversible, or lockout-prone — read the caution note before running. <span class="distro-badge">DS</span> = distro-specific — this command's existence or behavior isn't the same across distros; check the Distro Variations note before relying on it somewhere new.</div>
 
   <div class="toolbar">
     <div class="search-wrap">
@@ -760,7 +772,7 @@
 <span class="c"># Feed into a pipe for filtering</span>
 <span class="p">$</span> cat /etc/passwd | grep root</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-head" class="xref" data-target="cmd-head">head / tail</a>, <a href="#cmd-less" class="xref" data-target="cmd-less">less / more</a></div></div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-head" class="xref" data-target="cmd-head">head / tail</a>, <a href="#cmd-less" class="xref" data-target="cmd-less">less</a> / <a href="#cmd-more" class="xref" data-target="cmd-more">more</a></div></div>
         </div>
       </details>
 
@@ -1040,7 +1052,7 @@
 <span class="c"># Chained: list usernames that have a real login shell</span>
 <span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection &amp; pipes</a></div></div>
+            <div class="field-body"><a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection &amp; pipes</a>, <a href="#ref-regex" class="xref" data-target="ref-regex">Regex Quick Reference</a></div></div>
         </div>
       </details>
 
@@ -1066,6 +1078,8 @@
 <span class="p">$</span> sed -i 's/pattern/replace/g' file.txt</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p><code>-i</code> overwrites the original file with no confirmation and no backup by default. Test the pattern without <code>-i</code> first if unsure.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#ref-regex" class="xref" data-target="ref-regex">Regex Quick Reference</a></div></div>
         </div>
       </details>
 
@@ -1089,25 +1103,59 @@
 <span class="c"># accounts and excluding system/service accounts</span>
 <span class="p">$</span> awk -F ':' '$3 >= 1000 {print $1}' /etc/passwd</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a></div></div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, <a href="#ref-regex" class="xref" data-target="ref-regex">Regex Quick Reference</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-redirect">
-        <summary><span class="chev">▶</span><code class="cmdname">&lt; &gt; |</code><span class="cmd-desc">— I/O redirection &amp; pipes</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">&lt; &gt; &gt;&gt; |</code><span class="cmd-desc">— I/O redirection &amp; pipes</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p><strong>STDIN</strong> (<code>&lt;</code>) feeds a string/file in as input. <strong>STDOUT</strong> (<code>&gt;</code>) redirects a command's output to a file (overwriting it). A <strong>pipe</strong> (<code>|</code>) sends the output of one command directly into the input of the next, chaining tools together.</p></div>
+            <div class="field-body"><p>Every command has three data streams: <strong>STDIN</strong> (input it reads), <strong>STDOUT</strong> (normal output), and <strong>STDERR</strong> (error output, kept separate from STDOUT on purpose). Redirection sends any of these to a file instead of the screen; a pipe sends one command's STDOUT straight into the next command's STDIN, without a file in between at all.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>This is how most real investigation one-liners are built: <code>cat</code> a file, pipe it through <code>grep</code> to filter, pipe that through <code>awk</code> to extract a field, then redirect the result into a file for later reference.</p></div></div>
+            <div class="field-body"><p>This is how most real investigation one-liners are built: <code>cat</code> a file, pipe it through <code>grep</code> to filter, pipe that through <code>awk</code> to extract a field, then redirect the result into a file for later reference. Knowing the difference between <code>&gt;</code> and <code>&gt;&gt;</code> also matters constantly — one destroys what was there, the other doesn't.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> command &lt; input_file
+<span class="p">$</span> command &gt; output_file
+<span class="p">$</span> command &gt;&gt; output_file
+<span class="p">$</span> command1 | command2</pre></div>
+          <div class="field"><div class="field-label">Relevant Operators</div>
+            <table class="opts">
+              <tr><th>Operator</th><th>What it does</th></tr>
+              <tr><td>&lt;</td><td>STDIN — feed a file in as input</td></tr>
+              <tr><td>&gt;</td><td>STDOUT, overwrite — creates the file if it doesn't exist, <strong>replaces its entire contents</strong> if it does</td></tr>
+              <tr><td>&gt;&gt;</td><td>STDOUT, append — adds to the end of the file instead of replacing it</td></tr>
+              <tr><td>2&gt;</td><td>STDERR only — redirect just the error output, leaving normal output on screen</td></tr>
+              <tr><td>&gt;&gt; file 2&gt;&amp;1</td><td>Redirect both STDOUT and STDERR to the same file, appending</td></tr>
+              <tr><td>|</td><td>Pipe — send one command's STDOUT directly into the next command's STDIN</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Break a long chained command down at each pipe and reason through</span>
-<span class="c"># one segment at a time:</span>
+            <pre class="example"><span class="c"># STDIN: feed a file in as input instead of typing/piping</span>
+<span class="p">$</span> sort &lt; unsorted_names.txt
+
+<span class="c"># STDOUT, overwrite: creates or replaces the file entirely</span>
+<span class="p">$</span> ss -tulnp &gt; open_ports.txt
+
+<span class="c"># STDOUT, append: adds a new entry without erasing prior ones —</span>
+<span class="c"># use this for anything you're building up over time, like a log</span>
+<span class="p">$</span> echo "$(date): checked open ports" &gt;&gt; investigation_log.txt
+
+<span class="c"># STDERR only: capture just the errors, useful when scanning</span>
+<span class="c"># many hosts and you only care about what failed</span>
+<span class="p">$</span> ping -c 1 10.0.0.5 2&gt; ping_errors.txt
+
+<span class="c"># Capture everything — output and errors — into one log</span>
+<span class="p">$</span> ./scan_script.sh &gt;&gt; full_run.log 2&gt;&amp;1
+
+<span class="c"># Chained pipe: break it down at each | and reason through</span>
+<span class="c"># one segment at a time</span>
 <span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p><code>&gt;</code> overwrites silently — no warning, no confirmation. Pointing it at a file you meant to keep (a config, a log, someone else's work) destroys the original contents instantly. If you're not sure whether a file already has something worth keeping, use <code>&gt;&gt;</code> or check first.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a></div></div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-tail" class="xref" data-target="cmd-tail">tail</a></div></div>
         </div>
       </details>
 
@@ -1173,7 +1221,7 @@
             <pre class="example"><span class="p">$</span> chattr +i &lt;file&gt;   <span class="c"># make immutable</span>
 <span class="p">$</span> chattr -i &lt;file&gt;   <span class="c"># remove immutable bit</span></pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
-            <div class="field-body"><p>If you set <code>+i</code> and forget, future legitimate edits (including automated ones) will silently fail. Check with <a href="#cmd-chattr" class="xref" data-target="cmd-chattr">lsattr</a> before troubleshooting a file that "won't save."</p></div></div>
+            <div class="field-body"><p>If you set <code>+i</code> and forget, future legitimate edits (including automated ones) will silently fail. Check with <a href="#cmd-lsattr" class="xref" data-target="cmd-lsattr">lsattr</a> before troubleshooting a file that "won't save." Also depends on filesystem support, not distro directly — ext2/3/4, btrfs, and xfs all support the immutable bit, but some network or specialty filesystems don't.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-lsattr" class="xref" data-target="cmd-lsattr">lsattr</a></div></div>
         </div>
@@ -1256,27 +1304,42 @@
       </details>
 
       <details class="cmd" id="cmd-adduser">
-        <summary><span class="chev">▶</span><code class="cmdname">adduser</code><span class="cmd-desc">— create a new user (interactive)</span><span class="risk-badge">⚠ risk</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">adduser</code><span class="cmd-desc">— create a new user (interactive) &amp; add a user to a group</span><span class="risk-badge">⚠ risk</span><span class="distro-badge">DS</span></summary>
         <div class="cmd-body">
           <div class="verdict verdict-situational">
-            <span class="verdict-icon">⚖</span>
-            <div><span class="verdict-label">Situational</span>Use this for interactive, manual account creation — it's safer by default. For scripting or automation, see <a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a> instead.</div>
+            <span class="verdict-icon">⚙</span>
+            <div><span class="verdict-label">Distro-Specific First, Situational Second</span>On Debian/Ubuntu, this is a real friendly tool — prefer it for manual account creation. On RHEL/CentOS/Fedora, <code>adduser</code> is typically just a symlink to <a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a> with none of the behavior described below — so on those systems, use <code>useradd</code> directly regardless of whether the task is manual or scripted.</div>
           </div>
           <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>A friendlier wrapper for creating a new user — prompts for a password and creates a home directory automatically.</p></div>
+            <div class="field-body"><p>On Debian-family systems, a friendlier wrapper with two distinct uses: <code>adduser &lt;username&gt;</code> creates a new user, prompting for a password and creating a home directory automatically. <code>adduser &lt;username&gt; &lt;groupname&gt;</code> is a completely different action — it adds an <em>existing</em> user to an <em>existing</em> group, functioning as an alternative to <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod -aG</a>.</p></div>
           </div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>What you actually get</th></tr>
+              <tr><td>Debian-based (Debian, Ubuntu)</td><td>Full interactive tool — both usages below work as described</td></tr>
+              <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td>Usually just a symlink to <code>useradd</code> — no prompts, no group-adding usage, no friendly defaults</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> adduser &lt;username&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> adduser &lt;username&gt;              <span class="c"># create a new user</span>
+<span class="p">$</span> adduser &lt;username&gt; &lt;groupname&gt;  <span class="c"># add existing user to existing group</span></pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>--ingroup group</td><td>At creation, set the user's primary group instead of the default (a new group named after them)</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Prompts for password, creates home dir automatically</span>
-<span class="p">$</span> adduser newintern</pre></div>
+            <pre class="example"><span class="c"># Create a new user — prompts for password, creates home dir automatically</span>
+<span class="p">$</span> adduser newintern
+
+<span class="c"># Add that (already-existing) user to an existing group</span>
+<span class="p">$</span> adduser newintern sudo</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>An unfamiliar account showing up is worth investigating immediately — check its UID, shell, and home directory.</p></div></div>
+            <div class="field-body"><p>An unfamiliar account showing up is worth investigating immediately — check its UID, shell, and home directory. The same goes for an existing account suddenly gaining group membership it shouldn't have.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>A new account is one of the clearest persistence footholds an attacker can leave behind — treat any account creation you didn't expect as an incident, not a curiosity. When creating one legitimately, confirm the UID range and shell match what's intended.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
+            <div class="field-body"><a href="#cmd-useradd" class="xref" data-target="cmd-useradd">useradd</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a>, <a href="#cmd-groupadd" class="xref" data-target="cmd-groupadd">groupadd / addgroup</a></div></div>
         </div>
       </details>
 
@@ -1309,7 +1372,63 @@
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Same persistence-foothold concern as <code>adduser</code> — an unexpected new account is a compromise indicator regardless of which tool created it.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
+            <div class="field-body"><a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a>, <a href="#cmd-groupadd" class="xref" data-target="cmd-groupadd">groupadd / addgroup</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-groupadd">
+        <summary><span class="chev">▶</span><code class="cmdname">groupadd</code><span class="cmd-desc">— create a new group (scriptable, universal)</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for scripting, or on any RHEL-family system regardless of task. For manual/interactive use on Debian/Ubuntu, see <a href="#cmd-addgroup" class="xref" data-target="cmd-addgroup">addgroup</a> instead.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The lower-level, universal tool for creating a new group. Works identically across distro families — unlike <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>/<a href="#cmd-addgroup" class="xref" data-target="cmd-addgroup">addgroup</a>, this one has no Debian-specific behavior to worry about.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> groupadd [flags] &lt;groupname&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-g GID</td><td>Assign a specific GID instead of letting the system auto-pick the next available one</td></tr>
+              <tr><td>-r</td><td>Create a system group (GID below 1000) — matches the same service-vs-user threshold used for accounts</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Standard new group</span>
+<span class="p">$</span> groupadd analysts
+
+<span class="c"># System group, for a service account's use</span>
+<span class="p">$</span> groupadd -r appsvc</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-addgroup" class="xref" data-target="cmd-addgroup">addgroup</a>, <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-addgroup">
+        <summary><span class="chev">▶</span><code class="cmdname">addgroup</code><span class="cmd-desc">— create a new group (interactive, Debian-family)</span><span class="distro-badge">DS</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚙</span>
+            <div><span class="verdict-label">Distro-Specific</span>Debian/Ubuntu only — part of the same package as <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>. Not available on RHEL-family systems; use <a href="#cmd-groupadd" class="xref" data-target="cmd-groupadd">groupadd</a> there instead, which works everywhere.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Debian's friendlier wrapper for creating a group — same relationship to <code>groupadd</code> as <code>adduser</code> has to <code>useradd</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>Availability</th></tr>
+              <tr><td>Debian-based (Debian, Ubuntu)</td><td>Available — friendly wrapper around <code>groupadd</code></td></tr>
+              <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td>Usually not present at all — use <code>groupadd</code> directly</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> addgroup &lt;groupname&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> addgroup analysts</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-groupadd" class="xref" data-target="cmd-groupadd">groupadd</a>, <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a></div></div>
         </div>
       </details>
 
@@ -1417,6 +1536,74 @@
         </div>
       </details>
 
+      <details class="cmd" id="cmd-userdel">
+        <summary><span class="chev">▶</span><code class="cmdname">userdel</code><span class="cmd-desc">— delete a user (scriptable, universal)</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚖</span>
+            <div><span class="verdict-label">Situational</span>Use this for scripting, or on any RHEL-family system regardless of task. For manual/interactive use on Debian/Ubuntu, see <a href="#cmd-deluser" class="xref" data-target="cmd-deluser">deluser</a> instead.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The lower-level, universal tool for removing a user account. By default it does <em>not</em> remove the user's home directory — that's opt-in, not automatic.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The other half of account hardening — cutting off an unauthorized or compromised account entirely, rather than just locking it (<a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod -L</a>) as an interim step.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> userdel [flags] &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-r</td><td>Also remove the user's home directory and mail spool</td></tr>
+              <tr><td>-f</td><td>Force removal even if the user is currently logged in</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Remove the account, keep the home directory for evidence/review</span>
+<span class="p">$</span> userdel suspicious_acct
+
+<span class="c"># Remove the account and everything in it</span>
+<span class="p">$</span> userdel -r suspicious_acct</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Deleting an account you suspect is tied to a compromise destroys evidence — home directory contents, shell history, cron entries owned by that user. Lock it first (<code>usermod -L</code>) and investigate before deleting, unless you've already documented what you need.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-deluser" class="xref" data-target="cmd-deluser">deluser</a>, <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-deluser">
+        <summary><span class="chev">▶</span><code class="cmdname">deluser</code><span class="cmd-desc">— delete a user (interactive, Debian-family)</span><span class="distro-badge">DS</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-situational">
+            <span class="verdict-icon">⚙</span>
+            <div><span class="verdict-label">Distro-Specific</span>Debian/Ubuntu only — same package as <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>. Not available on RHEL-family systems; use <a href="#cmd-userdel" class="xref" data-target="cmd-userdel">userdel</a> there instead.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Debian's friendlier wrapper for removing a user — same relationship to <code>userdel</code> as <code>adduser</code> has to <code>useradd</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>Availability</th></tr>
+              <tr><td>Debian-based (Debian, Ubuntu)</td><td>Available — friendly wrapper around <code>userdel</code></td></tr>
+              <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td>Usually not present at all — use <code>userdel</code> directly</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> deluser &lt;username&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>--remove-home</td><td>Also remove the user's home directory and mail spool</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> deluser suspicious_acct
+<span class="p">$</span> deluser --remove-home suspicious_acct</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Same evidence concern as <code>userdel</code> — deleting a compromised account before investigating it destroys what you'd need to review.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-userdel" class="xref" data-target="cmd-userdel">userdel</a></div></div>
+        </div>
+      </details>
+
       <details class="cmd" id="cmd-visudo">
         <summary><span class="chev">▶</span><code class="cmdname">visudo</code><span class="cmd-desc">— safely edit /etc/sudoers</span></summary>
         <div class="cmd-body">
@@ -1449,7 +1636,7 @@
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> getfacl &lt;file&gt;</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>A file with ACLs set shows a <code>+</code> at the end of its permission string in <code>ls -l</code> — easy to miss if you're not looking for it.</p></div></div>
+            <div class="field-body"><p>A file with ACLs set shows a <code>+</code> at the end of its permission string in <code>ls -l</code> — easy to miss if you're not looking for it. The tool itself isn't always installed by default — it's part of the <code>acl</code> package on both Debian- and RHEL-based systems, so it may need installing first rather than being distro-specific in behavior.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-setfacl" class="xref" data-target="cmd-setfacl">setfacl</a></div></div>
         </div>
@@ -2081,30 +2268,75 @@
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p><code>--help</code> isn't a separate program — it's a convention most commands honor as a flag, giving a fast summary when the full <code>man</code> page is more than you need.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-less" class="xref" data-target="cmd-less">less / more</a></div></div>
+            <div class="field-body"><a href="#cmd-less" class="xref" data-target="cmd-less">less</a> / <a href="#cmd-more" class="xref" data-target="cmd-more">more</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-less">
-        <summary><span class="chev">▶</span><code class="cmdname">less / more</code><span class="cmd-desc">— page through long output or files</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">less</code><span class="cmd-desc">— page through long output or files</span></summary>
         <div class="cmd-body">
           <div class="verdict verdict-preferred">
             <span class="verdict-icon">✓</span>
-            <div><span class="verdict-label">Recommended: less</span>Doesn't load the whole file into memory, supports scrolling backward, and lets you search with <code>/</code> — <code>more</code> can only go forward. Prefer <code>less</code> whenever both are available.</div>
+            <div><span class="verdict-label">Recommended</span>Prefer this over <a href="#cmd-more" class="xref" data-target="cmd-more">more</a> — doesn't load the whole file into memory, supports scrolling backward, and lets you search with <code>/</code>. <code>more</code> can only move forward.</div>
           </div>
           <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Pages through long output or files one screen at a time — essential on headless servers where you can't just scroll a GUI window. <code>more</code> is the older, more limited pager; <code>less</code> is the modern replacement (the name is a joke — "less is more").</p></div>
+            <div class="field-body"><p>Pages through long output or files one screen at a time — essential on headless servers where you can't just scroll a GUI window. The modern replacement for <code>more</code> (the name is a joke — "less is more").</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>The default way to read a large log file without pulling the whole thing into the terminal at once — pairs naturally with <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a> in a pipe when you already know what you're looking for.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> less &lt;file&gt;
-<span class="p">$</span> more &lt;file&gt;</pre></div>
+<span class="c"># or, from a pipe:</span>
+<span class="p">$</span> &lt;command&gt; | less</pre></div>
+          <div class="field"><div class="field-label">Key Commands</div>
+            <table class="opts">
+              <tr><th>Keys</th><th>What it does</th></tr>
+              <tr><td>Space / b</td><td>Page forward / backward</td></tr>
+              <tr><td>↑ / ↓</td><td>Scroll one line at a time</td></tr>
+              <tr><td>/pattern</td><td>Search forward for a pattern</td></tr>
+              <tr><td>n / N</td><td>Repeat search forward / backward</td></tr>
+              <tr><td>g / G</td><td>Jump to start / end of the file</td></tr>
+              <tr><td>q</td><td>Quit</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="p">$</span> less /var/log/auth.log</pre></div>
+            <pre class="example"><span class="p">$</span> less /var/log/auth.log
+
+<span class="c"># Page through filtered grep output</span>
+<span class="p">$</span> grep "Failed password" /var/log/auth.log | less</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-man" class="xref" data-target="cmd-man">man</a>, <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a></div></div>
+            <div class="field-body"><a href="#cmd-more" class="xref" data-target="cmd-more">more</a>, <a href="#cmd-man" class="xref" data-target="cmd-man">man</a>, <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-more">
+        <summary><span class="chev">▶</span><code class="cmdname">more</code><span class="cmd-desc">— page through long output or files (legacy)</span></summary>
+        <div class="cmd-body">
+          <div class="verdict verdict-alternative">
+            <span class="verdict-icon">→</span>
+            <div><span class="verdict-label">Legacy — prefer less</span><a href="#cmd-less" class="xref" data-target="cmd-less">less</a> does everything this does plus backward scrolling and search. Still worth recognizing — some minimal/embedded systems only ship <code>more</code>.</div>
+          </div>
+          <div class="field" style="margin-top:14px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The older pager — pages forward through a file one screen at a time, but can't scroll backward once you've moved past a section.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Reach for this only when <code>less</code> genuinely isn't available on the box — most modern distros ship both, but a stripped-down or embedded system might only have <code>more</code>.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> more &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Key Commands</div>
+            <table class="opts">
+              <tr><th>Keys</th><th>What it does</th></tr>
+              <tr><td>Space</td><td>Page forward</td></tr>
+              <tr><td>Enter</td><td>Advance one line</td></tr>
+              <tr><td>q</td><td>Quit</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> more /var/log/auth.log</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>No backward scrolling and no search — once you've paged past something, the only way back is to quit and start over. This is the main reason <code>less</code> replaced it as the default choice.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-less" class="xref" data-target="cmd-less">less</a></div></div>
         </div>
       </details>
 
@@ -2649,6 +2881,16 @@
     <div class="section-body">
       <dl class="glossary">
         <div class="glossary-item">
+        <dt>Terminal</dt>
+        <dd>The program/window that gives you a text-based way to interact with the computer — it displays text and passes along whatever you type. On its own, a terminal doesn't understand commands; it's just the window. What actually interprets what you type is the <strong>shell</strong> running inside it.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Shell</dt>
+        <dd>The program that reads what you type into the terminal, interprets it as commands, and runs them — <code>bash</code> is the most common on Linux, though <code>zsh</code> and others exist too. "Shell" and "terminal" get used interchangeably in casual conversation, but they're different layers: the terminal is the window, the shell is the interpreter running inside it. Bash scripting, environment variables, and command syntax are all shell concepts, not terminal ones.</dd>
+        </div>
+
+        <div class="glossary-item">
         <dt>Absolute vs. Relative Path</dt>
         <dd>An absolute path always starts from the filesystem root (<code>/</code>) — e.g. <code>/home/user/Desktop/</code>. A relative path starts from wherever you currently are (<code>pwd</code>) — e.g. <code>var/www/html/</code>. <code>.</code> means the current directory, <code>..</code> means the parent directory, and <code>~</code> means your home directory.</dd>
         </div>
@@ -2761,6 +3003,100 @@
         <div class="glossary-item">
         <dt>SYN Cookies</dt>
         <dd>A kernel-level defense against SYN-flood denial-of-service attacks, where an attacker opens huge numbers of half-finished connections to exhaust a server's resources. Enabling SYN cookies (<a href="#cmd-sysctl" class="xref" data-target="cmd-sysctl">sysctl</a>) lets the kernel handle those connection attempts without committing resources until they're confirmed legitimate.</dd>
+        </div>
+
+        <div class="glossary-item" id="ref-regex">
+        <dt>Regex Quick Reference</dt>
+        <dd>
+          <p style="margin-bottom:10px;">The pattern language behind <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, and <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a> matching. Not a command on its own — a syntax used inside them.</p>
+
+          <details class="cmd">
+            <summary><span class="chev">▶</span><code class="cmdname">Full Reference</code><span class="cmd-desc">— operators, BRE vs. ERE, and worked examples</span></summary>
+            <div class="cmd-body">
+
+              <div class="field-label" style="margin-top:10px;">Anchors</div>
+              <table class="opts">
+                <tr><th>Symbol</th><th>Matches</th></tr>
+                <tr><td>^</td><td>Start of the line</td></tr>
+                <tr><td>$</td><td>End of the line</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Character Classes</div>
+              <table class="opts">
+                <tr><th>Symbol</th><th>Matches</th></tr>
+                <tr><td>.</td><td>Any single character (except a newline)</td></tr>
+                <tr><td>[abc]</td><td>Any one character listed inside the brackets</td></tr>
+                <tr><td>[^abc]</td><td>Any one character <em>not</em> listed inside the brackets</td></tr>
+                <tr><td>\d</td><td>Any digit (0–9)</td></tr>
+                <tr><td>\w</td><td>Any word character — letters, digits, underscore</td></tr>
+                <tr><td>\s</td><td>Any whitespace (space, tab, newline)</td></tr>
+                <tr><td>\D \W \S</td><td>The opposite of \d, \w, \s — anything <em>not</em> a digit/word-char/whitespace</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Quantifiers</div>
+              <table class="opts">
+                <tr><th>Symbol</th><th>Matches</th></tr>
+                <tr><td>*</td><td>0 or more of whatever came right before it</td></tr>
+                <tr><td>+</td><td>1 or more of whatever came right before it</td></tr>
+                <tr><td>?</td><td>0 or 1 of whatever came right before it — makes it optional</td></tr>
+                <tr><td>{n}</td><td>Exactly n repetitions</td></tr>
+                <tr><td>{n,}</td><td>n or more repetitions</td></tr>
+                <tr><td>{n,m}</td><td>Between n and m repetitions</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Groups &amp; Alternation</div>
+              <table class="opts">
+                <tr><th>Symbol</th><th>Matches</th></tr>
+                <tr><td>(abc)</td><td>Groups a sequence together — needed so a quantifier or <code>|</code> applies to the whole group, not just one character</td></tr>
+                <tr><td>a\|b</td><td>Alternation — matches "a" OR "b"</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Basic vs. Extended (BRE vs. ERE)</div>
+              <div class="field-body"><p>By default, <code>grep</code>/<code>sed</code> use Basic Regular Expressions (BRE), where <code>+</code>, <code>?</code>, <code>|</code>, and <code>()</code> need a backslash to work as special characters (<code>\+</code>, <code>\?</code>, <code>\|</code>, <code>\(\)</code>). The <code>-E</code> flag switches to Extended (ERE), where those symbols work directly without escaping — this is why the doc's <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a> examples consistently use <code>-E</code>.</p></div>
+
+              <div class="field-label" style="margin-top:12px;">Pattern Use Cases</div>
+              <table class="opts">
+                <tr><th>Pattern</th><th>Matches / Use</th></tr>
+                <tr><td>Failed password</td><td>Brute-force attempts in <code>/var/log/auth.log</code></td></tr>
+                <tr><td>Accepted password|Accepted publickey</td><td>Successful logins, either method — comparison point against who should have access</td></tr>
+                <tr><td>session opened for user root</td><td>Root logins specifically — routine or not is the question</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Worked Example — Real Login Shells</div>
+              <table class="opts">
+                <tr><th>Pattern piece</th><th>Meaning</th></tr>
+                <tr><td>:(/bin/(bash|sh))$</td><td>Full pattern, from the <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a> card's user-enumeration example</td></tr>
+                <tr><td>:</td><td>A literal colon, matching the field separator in /etc/passwd</td></tr>
+                <tr><td>(...)</td><td>Groups what's inside so <code>$</code> at the very end applies to the whole thing</td></tr>
+                <tr><td>/bin/</td><td>A literal path segment</td></tr>
+                <tr><td>(bash|sh)</td><td>Either "bash" or "sh" — alternation inside its own group</td></tr>
+                <tr><td>$</td><td>The whole thing must be at the end of the line — nothing after it</td></tr>
+              </table>
+
+              <div class="field-label" style="margin-top:12px;">Worked Example — IPv4 Address</div>
+              <table class="opts">
+                <tr><th>Pattern piece</th><th>Meaning</th></tr>
+                <tr><td>([0-9]{1,3}\.){3}[0-9]{1,3}</td><td>Full pattern — pulls a source IP out of a log line</td></tr>
+                <tr><td>[0-9]{1,3}</td><td>One to three digits — one octet of the address</td></tr>
+                <tr><td>\.</td><td>A literal period — escaped, since an unescaped <code>.</code> means "any character"</td></tr>
+                <tr><td>(...){3}</td><td>The digit-group-plus-period combination, repeated exactly 3 times — covers the first three octets</td></tr>
+                <tr><td>[0-9]{1,3}</td><td>The fourth and final octet, with no trailing period</td></tr>
+              </table>
+              <div class="field-body" style="margin-top:6px;"><p>Loose by design — matches digit-dot-digit-dot-digit-dot-digit shapes without checking that each group is actually 0–255, so <code>999.999.999.999</code> would technically match too. Fine for a quick <code>grep</code>; not something to rely on for validating input.</p></div>
+
+              <div class="field-label" style="margin-top:12px;">Worked Example — Skip Comments &amp; Blank Lines</div>
+              <table class="opts">
+                <tr><th>Pattern piece</th><th>Meaning</th></tr>
+                <tr><td>^#|^$</td><td>Full pattern — matches either a comment line or a blank line</td></tr>
+                <tr><td>^#</td><td>A line that starts with <code>#</code> — a comment</td></tr>
+                <tr><td>|</td><td>OR</td></tr>
+                <tr><td>^$</td><td>A line where the start and end anchors sit next to each other with nothing between them — an empty line</td></tr>
+              </table>
+              <div class="field-body" style="margin-top:6px;"><p>Combined with <code>-v</code> (invert match) on <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, this filters a noisy config file down to only its active lines: <code>grep -vE '^#|^$' sshd_config</code>.</p></div>
+
+            </div>
+          </details>
+        </dd>
         </div>
       </dl>
     </div>
