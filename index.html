@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Defense Linux Field Guide</title>
+<style>
+  :root{
+    --bg:         #0a0e0c;
+    --panel:      #10160f;
+    --panel-2:    #141c13;
+    --line:       #1f2b1d;
+    --text:       #cfd8cc;
+    --text-dim:   #7d8f78;
+    --green:      #4ade80;
+    --green-dim:  #2f6b45;
+    --amber:      #f5a524;
+    --red:        #e5484d;
+    --red-dim:    #7a2c2e;
+    --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top left, rgba(74,222,128,0.05), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--mono);
+    line-height:1.5;
+    padding:32px 18px 90px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+
+  /* header */
+  .prompt{
+    color:var(--green-dim);
+    font-size:12px;
+    letter-spacing:0.02em;
+    margin-bottom:6px;
+  }
+  .prompt .cursor{
+    display:inline-block;width:7px;height:13px;background:var(--green);
+    margin-left:4px;vertical-align:-2px;
+    animation:blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  h1{
+    font-size:22px;
+    margin:0 0 4px;
+    color:var(--text);
+    letter-spacing:0.01em;
+  }
+  h1 .bracket{color:var(--green);}
+  .subtitle{color:var(--text-dim);font-size:13px;margin-bottom:8px;}
+  .legend{
+    color:var(--text-dim);
+    font-size:11.5px;
+    margin-bottom:20px;
+  }
+  .legend .risk-badge{margin-right:4px;}
+
+  /* toolbar */
+  .toolbar{
+    display:flex;
+    gap:8px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .search-wrap{
+    flex:1;
+    min-width:200px;
+    position:relative;
+  }
+  .search-wrap::before{
+    content:"⌕";
+    position:absolute;
+    left:11px;top:50%;
+    transform:translateY(-50%);
+    color:var(--text-dim);
+    font-size:14px;
+  }
+  #search{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:13px;
+    padding:9px 12px 9px 30px;
+    border-radius:3px;
+    outline:none;
+  }
+  #search:focus{border-color:var(--green-dim);}
+  #search::placeholder{color:var(--text-dim);}
+  .btn{
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:12px;
+    padding:9px 14px;
+    border-radius:3px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn:hover{color:var(--green);border-color:var(--green-dim);}
+
+  .banner{
+    border:1px solid var(--green-dim);
+    background:rgba(74,222,128,0.05);
+    color:var(--text-dim);
+    font-size:12px;
+    padding:10px 14px;
+    border-radius:2px;
+    margin-bottom:20px;
+  }
+  .banner b{color:var(--green);}
+
+  /* shortcuts strip */
+  .shortcuts-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:6px 18px;
+    font-size:12px;
+    padding:4px 0 4px;
+  }
+  .shortcuts-grid .grp-title{
+    grid-column:1/-1;
+    color:var(--amber);
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin:12px 0 2px;
+    border-top:1px dashed var(--line);
+    padding-top:10px;
+  }
+  .shortcuts-grid .grp-title:first-child{border-top:none;padding-top:0;margin-top:2px;}
+  .sc-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;}
+  .sc-key{color:var(--green);white-space:nowrap;}
+  .sc-desc{color:var(--text-dim);text-align:right;}
+
+  /* top-level sections */
+  .section{
+    border:1px solid var(--line);
+    border-radius:3px;
+    margin-bottom:14px;
+    background:var(--panel);
+    overflow:hidden;
+  }
+  .section > summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    user-select:none;
+    border-left:3px solid var(--green-dim);
+  }
+  .section[open] > summary{border-left-color:var(--green);}
+  .section.shortcuts-section > summary{border-left-color:var(--amber);}
+  .section > summary::-webkit-details-marker{display:none;}
+  .section > summary .chev{
+    color:var(--green);
+    font-size:12px;
+    transition:transform 0.15s ease;
+    flex:0 0 auto;
+  }
+  .shortcuts-section > summary .chev{color:var(--amber);}
+  .section[open] > summary .chev{transform:rotate(90deg);}
+  .section > summary .idx{
+    color:var(--green);
+    font-size:12px;
+    flex:0 0 auto;
+  }
+  .shortcuts-section > summary .idx{color:var(--amber);}
+  .section > summary .title{
+    color:var(--text);
+    font-size:14.5px;
+    font-weight:600;
+    flex:1;
+  }
+  .section > summary .count{
+    color:var(--text-dim);
+    font-size:11px;
+    border:1px solid var(--line);
+    padding:2px 7px;
+    border-radius:10px;
+  }
+  .section-body{
+    padding:4px 16px 16px;
+  }
+
+  /* category dividers */
+  .cat{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:18px 0 8px;
+  }
+  .cat:first-of-type{margin-top:6px;}
+  .cat .cat-label{
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .cat .cat-line{
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+
+  /* command card */
+  .cmd{
+    border:1px solid var(--line);
+    border-radius:3px;
+    margin:8px 0;
+    background:var(--panel-2);
+    scroll-margin-top:16px;
+  }
+  .cmd > summary{
+    list-style:none;
+    cursor:pointer;
+    padding:6px 14px;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    user-select:none;
+  }
+  .cmd > summary::-webkit-details-marker{display:none;}
+  .cmd > summary .chev{
+    color:var(--text-dim);
+    font-size:11px;
+    transition:transform 0.15s ease;
+  }
+  .cmd[open] > summary .chev{transform:rotate(90deg);color:var(--green);}
+  .cmd > summary code.cmdname{
+    color:var(--green);
+    font-size:13px;
+    font-weight:700;
+    background:rgba(74,222,128,0.08);
+    padding:1px 6px;
+    border-radius:3px;
+  }
+  .cmd > summary .cmd-desc{
+    color:var(--text-dim);
+    font-size:12px;
+  }
+  .cmd-body{
+    padding:2px 16px 14px 16px;
+    border-top:1px solid var(--line);
+  }
+  .risk-badge{
+    font-size:10px;
+    color:var(--red);
+    border:1px solid var(--red-dim);
+    background:rgba(229,72,77,0.08);
+    padding:1px 6px;
+    border-radius:9px;
+    white-space:nowrap;
+  }
+  @keyframes flashHighlight{
+    0%{background:rgba(74,222,128,0.18);}
+    100%{background:transparent;}
+  }
+  .cmd.flash{animation:flashHighlight 1.2s ease;}
+
+  .field{margin-top:14px;}
+  .field-label{
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  .field-label.caution{color:var(--red);}
+  .field-body{font-size:13px;color:var(--text);}
+  .field-body p{margin:0 0 8px;}
+  .field-body p:last-child{margin-bottom:0;}
+
+  table.opts{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    margin-top:4px;
+  }
+  table.opts th{
+    text-align:left;
+    color:var(--text-dim);
+    font-weight:600;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:6px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  table.opts td{
+    padding:7px 8px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  table.opts td:first-child{
+    color:var(--green);
+    white-space:nowrap;
+    font-weight:600;
+  }
+  table.opts tr:last-child td{border-bottom:none;}
+  table.distro td:first-child{
+    color:var(--amber);
+    white-space:normal;
+    font-weight:600;
+  }
+
+  pre.example{
+    background:#080b07;
+    border:1px solid var(--line);
+    border-left:3px solid var(--green-dim);
+    border-radius:2px;
+    padding:10px 40px 10px 12px;
+    margin:6px 0;
+    overflow-x:auto;
+    font-size:12.5px;
+    color:#d7e6d2;
+    position:relative;
+    white-space:pre;
+  }
+  pre.example .c{color:var(--text-dim);} /* comment */
+  pre.example .p{color:var(--amber);}    /* prompt */
+  .copy-btn{
+    position:absolute;
+    top:6px;right:6px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:10px;
+    padding:3px 8px;
+    border-radius:3px;
+    cursor:pointer;
+    opacity:0.7;
+  }
+  .copy-btn:hover{opacity:1;color:var(--green);border-color:var(--green-dim);}
+
+  .xref-wrap a.xref{
+    color:var(--green);
+    text-decoration:none;
+    border-bottom:1px dotted var(--green-dim);
+  }
+  .xref-wrap a.xref:hover{border-bottom-style:solid;}
+
+  /* checklist (section 3) */
+  ol.checklist{
+    counter-reset:step;
+    list-style:none;
+    padding:0;
+    margin:4px 0;
+  }
+  ol.checklist > li{
+    counter-increment:step;
+    position:relative;
+    padding:10px 0 10px 38px;
+    border-bottom:1px solid var(--line);
+  }
+  ol.checklist > li:last-child{border-bottom:none;}
+  ol.checklist > li::before{
+    content:counter(step);
+    position:absolute;
+    left:0;top:10px;
+    width:24px;height:24px;
+    border:1px solid var(--green-dim);
+    color:var(--green);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;
+  }
+  .step-title{font-size:13.5px;color:var(--text);font-weight:600;margin-bottom:4px;}
+  .step-body{font-size:12.5px;color:var(--text-dim);margin-bottom:6px;}
+
+  /* quick-start tracks (nested collapsibles inside section 3) */
+  .track{
+    border:1px solid var(--line);
+    border-radius:3px;
+    margin:10px 0;
+    background:var(--panel-2);
+  }
+  .track > summary{
+    list-style:none;
+    cursor:pointer;
+    padding:11px 14px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    user-select:none;
+    border-left:3px solid var(--amber);
+  }
+  .track > summary::-webkit-details-marker{display:none;}
+  .track > summary .chev{
+    color:var(--amber);
+    font-size:11px;
+    transition:transform 0.15s ease;
+  }
+  .track[open] > summary .chev{transform:rotate(90deg);}
+  .track > summary .track-letter{
+    color:var(--amber);
+    font-size:12px;
+    font-weight:700;
+  }
+  .track > summary .track-title{
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--text);
+    flex:1;
+  }
+  .track > summary .track-sub{
+    font-size:11px;
+    color:var(--text-dim);
+  }
+  .track-body{
+    padding:4px 16px 14px;
+    border-top:1px solid var(--line);
+  }
+  .track-intro{
+    font-size:12px;
+    color:var(--text-dim);
+    padding:10px 0 2px;
+  }
+
+  /* glossary (section 4) */
+  .glossary-item{margin-top:16px;}
+  .glossary-item:first-child{margin-top:4px;}
+  .glossary-item.hide{display:none;}
+  dl.glossary dt{
+    color:var(--green);
+    font-size:13px;
+    font-weight:700;
+  }
+  dl.glossary dd{
+    margin:4px 0 0;
+    font-size:12.5px;
+    color:var(--text);
+    padding-left:0;
+  }
+
+  .footer-note{
+    color:var(--text-dim);
+    font-size:11.5px;
+    text-align:center;
+    margin-top:30px;
+  }
+
+  .cmd.hide{display:none;}
+  .track.hide{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="prompt">user@cyberdefense:~$ ./cheatsheet --load<span class="cursor"></span></div>
+  <h1><span class="bracket">[</span>Cyber Defense Linux Field Guide<span class="bracket">]</span></h1>
+  <div class="subtitle">Command reference &amp; response playbook for defending Linux systems</div>
+  <div class="legend"><span class="risk-badge">⚠ risk</span> = destructive, irreversible, or lockout-prone — read the caution note before running.</div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Search commands, tools, flags…" autocomplete="off">
+    </div>
+    <button class="btn" id="expandAll" type="button">Expand all</button>
+    <button class="btn" id="collapseAll" type="button">Collapse all</button>
+  </div>
+
+  <!-- SHORTCUTS STRIP -->
+  <details class="section shortcuts-section">
+    <summary>
+      <span class="chev">▶</span>
+      <span class="idx">⌨</span>
+      <span class="title">Terminal &amp; tmux Shortcuts</span>
+      <span class="count">quick reference</span>
+    </summary>
+    <div class="section-body">
+      <div class="shortcuts-grid">
+        <div class="grp-title">Line editing &amp; history</div>
+        <div class="sc-row"><span class="sc-key">Ctrl + a</span><span class="sc-desc">start of line</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + e</span><span class="sc-desc">end of line</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + l</span><span class="sc-desc">clear screen</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + ←/→</span><span class="sc-desc">jump one word</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + u</span><span class="sc-desc">cut to start of line</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + k</span><span class="sc-desc">cut to end of line</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + w</span><span class="sc-desc">cut word before cursor</span></div>
+        <div class="sc-row"><span class="sc-key">Alt + d</span><span class="sc-desc">delete word after cursor</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + y</span><span class="sc-desc">paste last cut text</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + r</span><span class="sc-desc">reverse-search history</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + g</span><span class="sc-desc">exit reverse search</span></div>
+        <div class="sc-row"><span class="sc-key">Ctrl + p / n</span><span class="sc-desc">prev / next command</span></div>
+        <div class="sc-row"><span class="sc-key">!!</span><span class="sc-desc">repeat last command</span></div>
+        <div class="sc-row"><span class="sc-key">!$ / Alt + .</span><span class="sc-desc">insert last argument</span></div>
+
+        <div class="grp-title">tmux — prefix: Ctrl + b</div>
+        <div class="sc-row"><span class="sc-key">prefix c</span><span class="sc-desc">new window</span></div>
+        <div class="sc-row"><span class="sc-key">prefix [num] / p / n</span><span class="sc-desc">switch window</span></div>
+        <div class="sc-row"><span class="sc-key">prefix &amp;</span><span class="sc-desc">delete window</span></div>
+        <div class="sc-row"><span class="sc-key">prefix "</span><span class="sc-desc">split pane horizontally</span></div>
+        <div class="sc-row"><span class="sc-key">prefix %</span><span class="sc-desc">split pane vertically</span></div>
+        <div class="sc-row"><span class="sc-key">prefix [arrow]</span><span class="sc-desc">switch pane</span></div>
+        <div class="sc-row"><span class="sc-key">prefix d</span><span class="sc-desc">detach session</span></div>
+        <div class="sc-row"><span class="sc-key">prefix z</span><span class="sc-desc">zoom pane fullscreen</span></div>
+        <div class="sc-row"><span class="sc-key">tmux</span><span class="sc-desc">new session</span></div>
+        <div class="sc-row"><span class="sc-key">tmux a</span><span class="sc-desc">reattach session</span></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SECTION 1: LINUX COMMANDS -->
+  <details class="section" open>
+    <summary>
+      <span class="chev">▶</span>
+      <span class="idx">01</span>
+      <span class="title">Linux Commands</span>
+      <span class="count">by category</span>
+    </summary>
+    <div class="section-body">
+
+      <div class="cat"><span class="cat-label">File &amp; Directory Operations</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-ls">
+        <summary><span class="chev">▶</span><code class="cmdname">ls</code><span class="cmd-desc">— list files and directories</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Lists the contents of a directory. With no argument, lists the current working directory.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>First command run in almost any directory to see what's there — including hidden files that might be a dropped payload or persistence mechanism.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ls [flags] [filepath]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-l</td><td>Long/detailed view — permissions, owner, size, date</td></tr>
+              <tr><td>-a</td><td>Show all files, including hidden dotfiles</td></tr>
+              <tr><td>-t</td><td>Sort by modification time, newest first</td></tr>
+              <tr><td>-S</td><td>Sort by file size, largest first</td></tr>
+              <tr><td>-i</td><td>Show inode numbers</td></tr>
+              <tr><td>-R</td><td>Recursive listing through subdirectories</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Detailed listing including hidden files</span>
+<span class="p">$</span> ls -la user1/Downloads
+
+<span class="c"># What changed most recently in this directory?</span>
+<span class="p">$</span> ls -lat
+
+<span class="c"># Find unusually large files</span>
+<span class="p">$</span> ls -laS</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-cd">
+        <summary><span class="chev">▶</span><code class="cmdname">cd</code><span class="cmd-desc">— change directory</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Changes the shell's current working directory. Accepts absolute paths (start with <code>/</code>), relative paths, <code>.</code>/<code>..</code>, or <code>~</code> for the home directory.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> cd [path]</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Absolute path</span>
+<span class="p">$</span> cd /home/user1/Desktop/
+
+<span class="c"># Previous directory</span>
+<span class="p">$</span> cd ..
+
+<span class="c"># Home directory shortcut</span>
+<span class="p">$</span> cd ~/Downloads</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>.</code> = current directory, <code>..</code> = parent directory, <code>~</code> = home directory. Root user's home is <code>/root</code>, not to be confused with <code>/</code> (filesystem root).</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-pwd">
+        <summary><span class="chev">▶</span><code class="cmdname">pwd</code><span class="cmd-desc">— print working directory</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Prints the full absolute path of the directory you're currently in — the reference point for any relative path you type next.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> pwd</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-touch">
+        <summary><span class="chev">▶</span><code class="cmdname">touch</code><span class="cmd-desc">— create an empty file / update timestamp</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Creates a new empty file if it doesn't exist, or updates the modified timestamp if it does.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> touch [flags] [filename/filepath]</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>An attacker touching files to fake or hide modification times is worth watching for during investigations — compare timestamps against expected change windows.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-mkdir">
+        <summary><span class="chev">▶</span><code class="cmdname">mkdir</code><span class="cmd-desc">— make a new directory</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Creates a new directory at the given path.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> mkdir [flags] [path/directory_name]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-p / --parent</td><td>Create any missing parent directories along the path</td></tr>
+            </table></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-cp">
+        <summary><span class="chev">▶</span><code class="cmdname">cp</code><span class="cmd-desc">— copy files or directories</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Copies a file or directory from a source path to a destination path.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> cp [source] [destination]</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-mv">
+        <summary><span class="chev">▶</span><code class="cmdname">mv</code><span class="cmd-desc">— move or rename a file</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Moves a file or directory to a new location. Also used to rename, since renaming is just moving to a new name in the same directory.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> mv [source] [destination]</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-rm">
+        <summary><span class="chev">▶</span><code class="cmdname">rm</code><span class="cmd-desc">— remove files or directories</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Deletes files or directories. There is no trash can — deletion is immediate and permanent.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> rm [flags] [filepath/filename]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-f / --force</td><td>Don't prompt, just remove</td></tr>
+              <tr><td>-r / --recursive</td><td>Remove a directory and everything inside it</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Irreversible. <code>rm -rf</code> on the wrong path can wipe far more than intended — double-check the path before hitting enter, especially with wildcards.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-cat">
+        <summary><span class="chev">▶</span><code class="cmdname">cat</code><span class="cmd-desc">— concatenate / print file contents</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Prints file contents to the terminal, or concatenates multiple files together.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Quick way to dump a config or log file to read directly, or to feed into a pipe for filtering with <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>/<a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> cat [filename]</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-headtail" class="xref" data-target="cmd-headtail">head / tail</a>, <a href="#cmd-manhelp" class="xref" data-target="cmd-manhelp">less / more</a></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">File Forensics &amp; Integrity</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-find">
+        <summary><span class="chev">▶</span><code class="cmdname">find</code><span class="cmd-desc">— locate files by name, permission, owner, or age</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Searches a directory tree for files matching criteria — name, permission bits, owner, modification time, and more. Far more powerful than <code>ls</code> for hunting across a whole filesystem.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>One of the highest-value hunting commands available: surface SUID/SGID binaries (a privilege-escalation favorite), orphaned files, world-writable files, or anything modified recently — all classic signs of tampering.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> find &lt;path&gt; [criteria]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-perm -4000</td><td>Find files with the SUID bit set</td></tr>
+              <tr><td>-perm -2000</td><td>Find files with the SGID bit set</td></tr>
+              <tr><td>-nouser / -nogroup</td><td>Find files owned by a UID/GID that no longer exists</td></tr>
+              <tr><td>-mtime -n</td><td>Modified within the last n days</td></tr>
+              <tr><td>-newer file</td><td>Modified more recently than a reference file</td></tr>
+              <tr><td>-perm -o+w</td><td>Find world-writable files</td></tr>
+              <tr><td>-type f / -type d</td><td>Restrict to files or directories</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Find every SUID binary on the system</span>
+<span class="p">$</span> find / -perm -4000 -type f 2>/dev/null
+
+<span class="c"># Files modified in the last 24 hours</span>
+<span class="p">$</span> find / -mtime -1 -type f 2>/dev/null
+
+<span class="c"># Orphaned files (owner no longer exists — often a leftover from a removed account)</span>
+<span class="p">$</span> find / -nouser -o -nogroup 2>/dev/null
+
+<span class="c"># World-writable files — anyone can modify these</span>
+<span class="p">$</span> find / -perm -o+w -type f 2>/dev/null</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-stat" class="xref" data-target="cmd-stat">stat</a>, <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-stat">
+        <summary><span class="chev">▶</span><code class="cmdname">stat</code><span class="cmd-desc">— detailed file metadata and timestamps</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows detailed metadata for a file: exact permissions, owner, inode, and all three timestamps — access, modify, and change (metadata change) time. More precise than <code>ls -l</code> for building a timeline.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>When timing matters — was this config edited before or after the service restarted? <code>stat</code> gives the exact timestamps needed to build that timeline.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> stat &lt;file&gt;</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-file">
+        <summary><span class="chev">▶</span><code class="cmdname">file</code><span class="cmd-desc">— identify true file type</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Inspects a file's actual contents (not its extension) to identify what type it really is.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Catches disguised files — an executable renamed with a <code>.jpg</code> or <code>.txt</code> extension still shows up as what it really is (e.g. an ELF binary or shell script).</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> file &lt;filename&gt;</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-diff">
+        <summary><span class="chev">▶</span><code class="cmdname">diff</code><span class="cmd-desc">— compare two files line by line</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows the line-by-line differences between two files.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Compare a live config against a known-good backup to spot exactly what an attacker (or a misconfiguration) changed.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> diff &lt;file1&gt; &lt;file2&gt;</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-hashsum">
+        <summary><span class="chev">▶</span><code class="cmdname">sha256sum / md5sum</code><span class="cmd-desc">— generate and verify file hashes</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Computes a cryptographic hash of a file's contents. Identical files produce identical hashes; any change to the file, even one byte, produces a completely different hash.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Verify a binary or config hasn't been tampered with by comparing its hash against a known-good value, or confirm a downloaded package matches its published checksum before trusting it.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> sha256sum &lt;file&gt;
+<span class="p">$</span> md5sum &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Prefer <code>sha256sum</code> over <code>md5sum</code> when possible — MD5 is cryptographically broken and shouldn't be relied on for anything security-critical.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-dudf">
+        <summary><span class="chev">▶</span><code class="cmdname">du / df</code><span class="cmd-desc">— disk usage by file/directory vs. by filesystem</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>du</code> shows how much space specific files/directories are using. <code>df</code> shows overall free/used space per mounted filesystem.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>A disk quietly filling up can mean staged exfiltration data, an oversized log from an attack in progress, or a crypto-miner writing junk to disk.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> du -sh &lt;path&gt;   <span class="c"># human-readable total for a path</span>
+<span class="p">$</span> df -h            <span class="c"># human-readable free space per filesystem</span></pre></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Text Editors</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-nano">
+        <summary><span class="chev">▶</span><code class="cmdname">nano</code><span class="cmd-desc">— simple built-in text editor</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>A very basic terminal text editor, installed by default on most distros. Low learning curve — good for quick edits.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> nano &lt;filename&gt;</pre></div>
+          <div class="field"><div class="field-label">Key Commands</div>
+            <table class="opts">
+              <tr><th>Keys</th><th>What it does</th></tr>
+              <tr><td>Ctrl + X</td><td>Exit (prompts to save)</td></tr>
+              <tr><td>Y</td><td>Confirm save under the same filename</td></tr>
+            </table></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-vim">
+        <summary><span class="chev">▶</span><code class="cmdname">vim</code><span class="cmd-desc">— powerful, highly customizable editor</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>A far more powerful and customizable editor than nano, but with a steeper learning curve. Not always installed by default. Has 5 modes and can run commands from inside the editor.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> vim &lt;filename&gt;</pre></div>
+          <div class="field"><div class="field-label">Key Commands</div>
+            <table class="opts">
+              <tr><th>Keys</th><th>What it does</th></tr>
+              <tr><td>:wq</td><td>Save and close the file</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Run <code>vimtutor</code> in the command line for an interactive walkthrough if it's unfamiliar.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Text Processing &amp; Search</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-grep">
+        <summary><span class="chev">▶</span><code class="cmdname">grep</code><span class="cmd-desc">— search text using patterns</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>grep</code> (Global Regular Expression Print) scans input line-by-line and prints any line that matches a given pattern or string. Reads from a file argument, multiple files, or STDIN — commonly used at the end of a pipe chain.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Primary tool for hunting during initial triage: pulling suspicious lines out of logs, finding accounts with shell access in <code>/etc/passwd</code>, searching config files for a setting, or filtering the output of another command down to what matters. Combine with <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>/<a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a> for full log-hunting pipelines.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> grep [options] "pattern" &lt;file&gt;
+<span class="c"># or, from a pipe:</span>
+<span class="p">$</span> cat &lt;file&gt; | grep "pattern"</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-i</td><td>Case-insensitive match</td></tr>
+              <tr><td>-r / -R</td><td>Recursive search through a directory</td></tr>
+              <tr><td>-v</td><td>Invert match — show lines that don't match</td></tr>
+              <tr><td>-E</td><td>Extended regex (enables <code>|</code>, <code>+</code>, <code>{}</code> without escaping)</td></tr>
+              <tr><td>-n</td><td>Show line numbers with matches</td></tr>
+              <tr><td>-c</td><td>Count matching lines instead of printing them</td></tr>
+              <tr><td>-l</td><td>Print only filenames that contain a match</td></tr>
+              <tr><td>--color</td><td>Highlight matched text in output</td></tr>
+              <tr><td>-w</td><td>Match whole words only</td></tr>
+              <tr><td>-A n / -B n / -C n</td><td>Show n lines of context after / before / around a match</td></tr>
+              <tr><td>-o</td><td>Print only the matched portion of the line, not the whole line</td></tr>
+              <tr><td>-f file</td><td>Read patterns to search for from a file — good for matching a list of known-bad IPs or strings</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Find all users with a bash or sh shell in /etc/passwd</span>
+<span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$'
+
+<span class="c"># Search recursively for a string across config files</span>
+<span class="p">$</span> grep -r "PermitRootLogin" /etc/ssh/
+
+<span class="c"># Case-insensitive search with line numbers</span>
+<span class="p">$</span> grep -in "error" /var/log/auth.log
+
+<span class="c"># Read a failed-login hit with 3 lines of context on each side</span>
+<span class="p">$</span> grep -A3 -B3 "Failed password" /var/log/auth.log
+
+<span class="c"># Match a list of known-bad indicators against a log</span>
+<span class="p">$</span> grep -f iocs.txt /var/log/syslog
+
+<span class="c"># Chained: list usernames that have a real login shell</span>
+<span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection &amp; pipes</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-sed">
+        <summary><span class="chev">▶</span><code class="cmdname">sed</code><span class="cmd-desc">— stream editor for find/replace in files</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Applies a scripted transformation (most commonly find-and-replace) to text as it streams through, line by line. Supports regex pattern matching.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Scripting out bulk config changes — e.g. rewriting a setting across a file, or across many files, without opening an editor.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> sed &lt;script&gt; &lt;filename&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag/Part</th><th>What it does</th></tr>
+              <tr><td>-i</td><td>Edit the file in place (overwrites it)</td></tr>
+              <tr><td>g</td><td>Global — replace all matches on a line, not just the first</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Replace all occurrences of "pattern" with "replace" in a file, in place</span>
+<span class="p">$</span> sed -i 's/pattern/replace/g' file.txt</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p><code>-i</code> overwrites the original file with no confirmation and no backup by default. Test the pattern without <code>-i</code> first if unsure.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-awk">
+        <summary><span class="chev">▶</span><code class="cmdname">awk</code><span class="cmd-desc">— field-based text filtering and scripting</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Processes text a line at a time and splits each line into fields (like columns), so you can select, filter, or transform specific fields. Effectively runs a small program over each line of input.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Extracting one column out of structured output — usernames from <code>/etc/passwd</code>, a specific field from a CSV log, or a PID from <code>ps</code> output.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> awk &lt;options&gt; &lt;script&gt; &lt;input&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Print the 2nd comma-separated field of a CSV</span>
+<span class="p">$</span> awk -F ',' '{print $2}' data.csv</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-redirect">
+        <summary><span class="chev">▶</span><code class="cmdname">&lt; &gt; |</code><span class="cmd-desc">— I/O redirection &amp; pipes</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><strong>STDIN</strong> (<code>&lt;</code>) feeds a string/file in as input. <strong>STDOUT</strong> (<code>&gt;</code>) redirects a command's output to a file (overwriting it). A <strong>pipe</strong> (<code>|</code>) sends the output of one command directly into the input of the next, chaining tools together.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>This is how most real investigation one-liners are built: <code>cat</code> a file, pipe it through <code>grep</code> to filter, pipe that through <code>awk</code> to extract a field, then redirect the result into a file for later reference.</p></div></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Break a long chained command down at each pipe and reason through</span>
+<span class="c"># one segment at a time:</span>
+<span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Permissions &amp; Ownership</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-chmod">
+        <summary><span class="chev">▶</span><code class="cmdname">chmod</code><span class="cmd-desc">— change file permissions</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Changes read/write/execute permissions on a file or directory, either symbolically (<code>rwx</code>) or numerically (octal, e.g. <code>744</code>). See the Reference section for how octal maps to <code>rwx</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> chmod &lt;mode&gt; &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-R</td><td>Apply recursively to a directory and everything inside it</td></tr>
+              <tr><td>--reference=file</td><td>Copy the mode from another file instead of typing octal</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># rwxr--r-- </span>
+<span class="p">$</span> chmod 744 script.sh
+
+<span class="c"># r-x-w---x</span>
+<span class="p">$</span> chmod 755 script.sh</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Overly permissive modes (<code>777</code>) can open up a system unintentionally — set only what's needed. <code>-R</code> is especially dangerous: it applies to every file underneath, including ones that needed a different, more restrictive mode. Spot-check a directory tree before running it recursively.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chown" class="xref" data-target="cmd-chown">chown</a>, <a href="#cmd-chattr" class="xref" data-target="cmd-chattr">chattr</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-chown">
+        <summary><span class="chev">▶</span><code class="cmdname">chown</code><span class="cmd-desc">— change file owner/group</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Changes which user and/or group owns a file.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> chown user:group &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="p">$</span> chown user1:group1 notes.txt
+<span class="p">$</span> chown root:root notes.txt</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-chattr">
+        <summary><span class="chev">▶</span><code class="cmdname">chattr</code><span class="cmd-desc">— set/unset the immutable attribute</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Changes low-level filesystem attributes on a file. The most relevant one for defense is the immutable bit (<code>i</code>) — while set, the file can't be modified, deleted, or renamed by anyone, including root, until it's unset.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Lock down a critical config file so it can't be silently overwritten by an attacker (or a script) — even with root access, the immutable bit has to be removed first.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> chattr +i &lt;file&gt;   <span class="c"># make immutable</span>
+<span class="p">$</span> chattr -i &lt;file&gt;   <span class="c"># remove immutable bit</span></pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>If you set <code>+i</code> and forget, future legitimate edits (including automated ones) will silently fail. Check with <a href="#cmd-chattr" class="xref" data-target="cmd-chattr">lsattr</a> before troubleshooting a file that "won't save."</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-lsattr" class="xref" data-target="cmd-lsattr">lsattr</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-lsattr">
+        <summary><span class="chev">▶</span><code class="cmdname">lsattr</code><span class="cmd-desc">— list file attributes</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Displays the filesystem attributes on a file, including whether the immutable bit is set.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> lsattr &lt;file&gt;</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-chattr" class="xref" data-target="cmd-chattr">chattr</a></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">User &amp; Access Management</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-sudo">
+        <summary><span class="chev">▶</span><code class="cmdname">sudo / su</code><span class="cmd-desc">— run as another user or root</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>sudo &lt;command&gt;</code> runs a single command as root (or another user). <code>su &lt;user&gt;</code> switches to that user's shell entirely. <code>su -</code> switches and also loads that user's environment.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> sudo &lt;command&gt;
+<span class="p">$</span> sudo -i        <span class="c"># root login shell</span>
+<span class="p">$</span> sudo su        <span class="c"># root shell via sudo</span>
+<span class="p">$</span> su &lt;user&gt;
+<span class="p">$</span> su -</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Who's in the sudo group is one of the first things worth checking on any box — an unexpected member is a red flag. Check <code>/etc/sudoers</code> for rules that shouldn't exist.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-adduser">
+        <summary><span class="chev">▶</span><code class="cmdname">adduser / useradd</code><span class="cmd-desc">— create a new user</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>adduser</code> is a friendlier wrapper: it prompts for a password and creates a home directory automatically. <code>useradd</code> is the lower-level, less convenient tool — it doesn't create a home directory or set a password unless told to.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>An unfamiliar account showing up from either of these is worth investigating immediately — check its UID, shell, and home directory.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-usermod">
+        <summary><span class="chev">▶</span><code class="cmdname">usermod / id</code><span class="cmd-desc">— modify a user / show identity &amp; groups</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>usermod</code> changes an existing user's settings (groups, shell, home directory, lock status). <code>id</code> prints a user's UID, GID, and group memberships — useful for confirming exactly what access an account has.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>usermod</code> is not the same as group policy — it's per-user, immediate. UID 0 is always root/admin; services typically run below UID 1000, real user accounts above it.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Modifying group membership or shell for the wrong account can lock a legitimate user out or hand an attacker more access — verify the target account before running.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-passwd">
+        <summary><span class="chev">▶</span><code class="cmdname">passwd / chpasswd</code><span class="cmd-desc">— set or change a password</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>passwd</code> changes a password interactively (for the current user, or for another user when run with privileges). <code>chpasswd</code> reads username:password pairs and sets them in bulk — built for automation/scripting.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> passwd            <span class="c"># change your own password</span>
+<span class="p">$</span> passwd user2      <span class="c"># change user2's password</span>
+<span class="p">$</span> echo "user2:newpassword" | chpasswd</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>chpasswd</code> input can also be typed manually and terminated with <code>Ctrl + D</code> instead of piping from <code>echo</code>.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Resetting the wrong account's password locks that user out immediately — confirm the username first, and make sure you have another way in before changing your own.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-visudo">
+        <summary><span class="chev">▶</span><code class="cmdname">visudo</code><span class="cmd-desc">— safely edit /etc/sudoers</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Opens <code>/etc/sudoers</code> in an editor with syntax checking on save — if the edit would break the file, it warns you instead of writing broken syntax.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The correct way to change sudo rules. Editing <code>/etc/sudoers</code> directly with <a href="#cmd-nano" class="xref" data-target="cmd-nano">nano</a>/<a href="#cmd-vim" class="xref" data-target="cmd-vim">vim</a> and introducing a syntax error can lock <em>every</em> account out of sudo at once.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> visudo</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-acl">
+        <summary><span class="chev">▶</span><code class="cmdname">getfacl / setfacl</code><span class="cmd-desc">— view and set fine-grained Access Control Lists</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Extends permissions beyond the basic owner/group/others model — lets you grant a specific user or group access to a file without changing its base permissions.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>When a hardening task needs more precision than <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>/<a href="#cmd-chown" class="xref" data-target="cmd-chown">chown</a> can express — e.g. one extra user needs read access without changing group ownership. Also worth checking during an audit: ACLs are easy to miss since <code>ls -l</code> doesn't show them fully.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> getfacl &lt;file&gt;
+<span class="p">$</span> setfacl -m u:&lt;user&gt;:rw &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>A file with ACLs set shows a <code>+</code> at the end of its permission string in <code>ls -l</code> — easy to miss if you're not looking for it.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Process Management</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-ps">
+        <summary><span class="chev">▶</span><code class="cmdname">ps</code><span class="cmd-desc">— list running processes</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Lists processes. On its own, only shows processes tied to the current terminal — use <code>ps aux</code> to see every process on the system.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Core hardening/hunting command — scan running processes for anything unexpected, unusually named, or running from a strange path.</p></div></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>aux</td><td>Every process, every user, BSD-style output</td></tr>
+              <tr><td>-ef</td><td>Every process, full-format listing (includes PPID)</td></tr>
+              <tr><td>--forest</td><td>Draws the parent/child process tree visually</td></tr>
+              <tr><td>-o pid,ppid,user,cmd</td><td>Show only the fields you specify</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># All processes, all users</span>
+<span class="p">$</span> ps aux
+
+<span class="c"># Visual process tree — spot a suspicious parent/child chain,</span>
+<span class="c"># e.g. a webserver spawning a shell</span>
+<span class="p">$</span> ps -ef --forest
+
+<span class="c"># Just the fields you care about</span>
+<span class="p">$</span> ps -eo pid,ppid,user,cmd</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-kill" class="xref" data-target="cmd-kill">kill</a>, <a href="#cmd-pgrep" class="xref" data-target="cmd-pgrep">pgrep</a>, <a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-kill">
+        <summary><span class="chev">▶</span><code class="cmdname">kill</code><span class="cmd-desc">— terminate a process by ID</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Sends a signal to a process, most commonly to terminate it. <code>kill -9</code> sends SIGKILL — an immediate, forceful kill that the process can't intercept or clean up after.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> kill -9 &lt;PID&gt;</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>SIGKILL gives the process no chance to shut down gracefully — it can leave lock files, corrupt in-progress writes, or drop open connections uncleanly. Use it when the process needs to die immediately, not as a default first move.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a>, <a href="#cmd-pgrep" class="xref" data-target="cmd-pgrep">pgrep</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-pgrep">
+        <summary><span class="chev">▶</span><code class="cmdname">pgrep</code><span class="cmd-desc">— find a process ID by name</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Searches running processes by name and returns matching PIDs — faster than piping <code>ps aux</code> through <code>grep</code> for the same result.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> pgrep &lt;process_name&gt;</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-lsof">
+        <summary><span class="chev">▶</span><code class="cmdname">lsof</code><span class="cmd-desc">— list open files and the processes holding them</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Lists open files — and on Linux, network sockets count as files too — along with the process holding each one open. The connective tissue between "what's listening on this port" and "which exact process that is."</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Pair with <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat/ss</a> when you find a suspicious open port — <code>lsof</code> tells you exactly which process and PID owns it. Also useful for finding which process is holding a file open (e.g. one you're trying to delete or that's writing to disk unexpectedly).</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> lsof [options]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-i :port</td><td>Show what's using a specific port</td></tr>
+              <tr><td>-p PID</td><td>Show everything a specific process has open</td></tr>
+              <tr><td>-u user</td><td>Show everything a specific user has open</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># What process is listening on port 4444?</span>
+<span class="p">$</span> lsof -i :4444
+
+<span class="c"># Every file/socket a suspicious PID has open</span>
+<span class="p">$</span> lsof -p 1337</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat / ss</a>, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Logs &amp; Login History</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-journalctl">
+        <summary><span class="chev">▶</span><code class="cmdname">journalctl</code><span class="cmd-desc">— view systemd logs</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Reads the systemd journal — the binary log store used by most modern distros alongside or instead of traditional plaintext files in <code>/var/log</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Central place to review boot logs, service failures, and authentication events on systemd-based systems — often faster than hunting through individual log files.</p></div></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-u service</td><td>Show logs for one specific service</td></tr>
+              <tr><td>-f</td><td>Follow — stream new log entries live</td></tr>
+              <tr><td>--since "time"</td><td>Only show entries after a given time</td></tr>
+              <tr><td>-b</td><td>Only show logs from the current boot</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Live-tail SSH auth activity</span>
+<span class="p">$</span> journalctl -u sshd -f
+
+<span class="c"># Everything logged in the last hour</span>
+<span class="p">$</span> journalctl --since "1 hour ago"</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-history">
+        <summary><span class="chev">▶</span><code class="cmdname">history</code><span class="cmd-desc">— view shell command history</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows previously run commands for the current shell session, backed by a history file (commonly <code>~/.bash_history</code>).</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Reviewing a compromised or suspicious account's history can reveal exactly what an attacker ran. Just as important defensively: know that clearing history (<code>history -c</code>, unsetting <code>HISTFILE</code>) is a common anti-forensic move — an empty or missing history file on an active account is itself a red flag.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> history</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Don't clear history on a box you're investigating — it's evidence. Only clear your own working history, and only when that's genuinely appropriate.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-lastlog">
+        <summary><span class="chev">▶</span><code class="cmdname">who / w / last / lastlog</code><span class="cmd-desc">— see who's logged in and login history</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>who</code>/<code>w</code> show who's currently logged in (and what they're doing). <code>last</code> shows a history of logins/logouts. <code>lastlog</code> shows the most recent login for every account, including ones that have never logged in.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Fast way to spot an account logging in from an unexpected location, at an unexpected time, or an account that suddenly has activity after sitting dormant.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> who
+<span class="p">$</span> w
+<span class="p">$</span> last
+<span class="p">$</span> lastlog</pre></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Service Management</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-systemctl">
+        <summary><span class="chev">▶</span><code class="cmdname">systemctl</code><span class="cmd-desc">— start, stop &amp; manage background services (with distro/init-system variants)</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Controls services — programs that run in the background and are managed by the system's init process (things like <code>sshd</code>, <code>nginx</code>, <code>cron</code>). The command you use depends on which init system the distro runs, not the distro name itself.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Check what's running, disable services you don't need (shrinks attack surface), restart a service after fixing its config, or stop something suspicious that keeps re-launching. Usually one of the first things to audit on a new box.</p></div></div>
+          <div class="field"><div class="field-label">Distro / Init System Variations</div>
+            <div class="field-body" style="margin-bottom:6px;"><p>Same action, different command depending on what the target system uses:</p></div>
+            <table class="opts distro">
+              <tr><th>System type</th><th>Command</th></tr>
+              <tr><td>systemd (most modern distros — Ubuntu, Debian 8+, RHEL/CentOS 7+, Fedora)</td><td><code>systemctl start sshd</code></td></tr>
+              <tr><td>Older SysV-init distros (no systemd)</td><td><code>/etc/init.d/sshd start</code></td></tr>
+              <tr><td>Generic wrapper (works on many systems as a fallback if unsure)</td><td><code>service sshd start</code></td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> systemctl &lt;action&gt; &lt;service&gt;
+<span class="p">$</span> service &lt;service&gt; &lt;action&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Actions</div>
+            <table class="opts">
+              <tr><th>Action</th><th>What it does</th></tr>
+              <tr><td>status</td><td>Show whether a service is running</td></tr>
+              <tr><td>start / stop</td><td>Start or stop the service now</td></tr>
+              <tr><td>restart</td><td>Stop then start (e.g. after a config change)</td></tr>
+              <tr><td>enable / disable</td><td>Toggle whether it launches automatically at boot</td></tr>
+              <tr><td>mask</td><td>Block a service from being started at all, even manually — stronger than disable</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Check if SSH is running (systemd)</span>
+<span class="p">$</span> systemctl status sshd
+
+<span class="c"># Same check on a system without systemctl</span>
+<span class="p">$</span> service sshd status
+
+<span class="c"># Fully disable a service so it can't be restarted</span>
+<span class="p">$</span> systemctl mask &lt;service&gt;
+
+<span class="c"># Legacy init.d fallback (rare — mostly older/minimal distros)</span>
+<span class="p">$</span> /etc/init.d/sshd status</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Stopping or masking the wrong service (e.g. your own SSH access) can lock you out of the box remotely. Confirm the service name and your access path before disabling anything remote-facing.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Package Management</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-pkgmgr">
+        <summary><span class="chev">▶</span><code class="cmdname">apt / yum / apk / pacman</code><span class="cmd-desc">— install, update &amp; remove software (distro variants)</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Every distro family ships its own package manager for installing, updating, and removing software. The action is the same across all of them; only the command name and exact flags change.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>Package manager</th></tr>
+              <tr><td>Debian-based (Debian, Ubuntu)</td><td><code>apt</code></td></tr>
+              <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td><code>yum</code></td></tr>
+              <tr><td>Alpine</td><td><code>apk</code></td></tr>
+              <tr><td>Arch</td><td><code>pacman</code></td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Debian-based</span>
+<span class="p">$</span> apt update
+<span class="p">$</span> apt upgrade
+<span class="p">$</span> apt install &lt;package&gt;
+<span class="p">$</span> apt purge &lt;package&gt;
+
+<span class="c"># RHEL-based</span>
+<span class="p">$</span> yum update
+<span class="p">$</span> yum upgrade
+<span class="p">$</span> yum install &lt;package&gt;
+<span class="p">$</span> yum remove &lt;package&gt;</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Knowing the package manager tells you the distro family at a glance — useful shorthand when jumping onto an unfamiliar box mid-competition or mid-incident.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Scheduling</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-crontab">
+        <summary><span class="chev">▶</span><code class="cmdname">crontab</code><span class="cmd-desc">— view/edit a user's scheduled tasks</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Edits the current user's cron table — a list of commands set to run automatically at defined intervals (every day/week/month, etc).</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Cron is a classic persistence mechanism — always check for scripts that shouldn't be there. See the full write-up under Programs &amp; Tools for the broader cron system, including <code>/etc/cron.d</code>.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> crontab -e</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Editing or removing a cron entry you don't recognize without documenting it first can destroy evidence of how a system was compromised.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Networking</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-ip">
+        <summary><span class="chev">▶</span><code class="cmdname">ip</code><span class="cmd-desc">— show and configure network interfaces &amp; routes</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The modern tool for both viewing and configuring networking — interfaces, addresses, and routes. <code>ifconfig</code> (Linux) / <code>ipconfig</code> (Windows) are older/alternate equivalents for the viewing side only.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Beyond just viewing — <code>ip addr</code> assigns an address to an interface, and <code>ip route</code> manages where traffic goes, including the default gateway. Both are usually temporary until made persistent through the distro's network manager.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ip a                                    <span class="c"># view interfaces &amp; addresses</span>
+<span class="p">$</span> ip addr add &lt;ip&gt;/&lt;mask&gt; dev &lt;iface&gt;      <span class="c"># assign an address</span>
+<span class="p">$</span> ip addr del &lt;ip&gt;/&lt;mask&gt; dev &lt;iface&gt;      <span class="c"># remove an address</span>
+<span class="p">$</span> ip route show                           <span class="c"># view the routing table</span>
+<span class="p">$</span> ip route add default via &lt;gateway&gt;      <span class="c"># set default gateway</span>
+<span class="p">$</span> ifconfig                                 <span class="c"># older equivalent for viewing</span></pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Assign a static IP to eth0</span>
+<span class="p">$</span> ip addr add 192.168.1.12/24 dev eth0
+
+<span class="c"># Point this host at its gateway</span>
+<span class="p">$</span> ip route add default via 192.168.1.1</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Changes made this way are temporary — they don't survive a reboot on their own. See <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager / systemd-networkd / netplan</a> for making them persistent, and the CIDR/Subnet Mask and Default Gateway glossary entries if the <code>/24</code> notation is unfamiliar.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-ping">
+        <summary><span class="chev">▶</span><code class="cmdname">ping</code><span class="cmd-desc">— test basic reachability to a host</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Sends ICMP echo requests to a target and reports whether — and how quickly — it responds. The simplest possible connectivity test.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>First check after any network change: can this host reach its gateway? Can it reach something beyond the gateway? A failure at the gateway step points to local config; a failure only beyond it points to routing or the far side.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ping [options] &lt;host&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-c n</td><td>Send exactly n packets, then stop (default runs forever)</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Confirm the gateway is reachable, 3 packets and stop</span>
+<span class="p">$</span> ping -c 3 192.168.1.1</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Some hosts (Windows especially) block ICMP by default, so a failed ping doesn't always mean the host is down or unreachable — it may just be filtered.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-netstat">
+        <summary><span class="chev">▶</span><code class="cmdname">netstat / ss</code><span class="cmd-desc">— view network connections &amp; listening ports</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Shows active network connections, listening ports, and the processes behind them. <code>netstat</code> may require installing <code>net-tools</code> on newer distros; <code>ss</code> is the modern built-in replacement.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Confirm exactly what's listening on the box and where connections are going — a fast way to spot an unexpected open port or an outbound connection to somewhere it shouldn't be. Pair with <a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a> to identify exactly which process owns a given port.</p></div></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-t</td><td>TCP connections</td></tr>
+              <tr><td>-u</td><td>UDP connections</td></tr>
+              <tr><td>-l</td><td>Listening sockets only</td></tr>
+              <tr><td>-n</td><td>Numeric — skip DNS resolution (faster, and won't tip off a listener)</td></tr>
+              <tr><td>-p</td><td>Show the owning process/PID</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Everything listening, with the process that owns it</span>
+<span class="p">$</span> netstat -tulnp
+<span class="p">$</span> ss -tulnp</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-lsof" class="xref" data-target="cmd-lsof">lsof</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-tcpdump">
+        <summary><span class="chev">▶</span><code class="cmdname">tcpdump</code><span class="cmd-desc">— capture and inspect live network traffic</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Captures packets directly off a network interface and prints or saves them for inspection. Goes a level deeper than <code>netstat</code>/<code>ss</code> — instead of just showing what's connected, it shows the actual traffic.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Confirm what's actually being sent over a suspicious connection, verify a service is really talking the protocol it claims to, or capture evidence of an ongoing attack for later analysis.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> tcpdump [options]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-i interface</td><td>Capture on a specific interface (e.g. eth0)</td></tr>
+              <tr><td>-n</td><td>Don't resolve hostnames — faster, cleaner output</td></tr>
+              <tr><td>-w file</td><td>Write the capture to a file for later analysis</td></tr>
+              <tr><td>port N</td><td>Filter to a specific port</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Watch traffic on port 4444 in real time</span>
+<span class="p">$</span> tcpdump -i eth0 -n port 4444
+
+<span class="c"># Save a capture to review later</span>
+<span class="p">$</span> tcpdump -i eth0 -w capture.pcap</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-nmap">
+        <summary><span class="chev">▶</span><code class="cmdname">nmap</code><span class="cmd-desc">— scan for open ports on the network</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Quickly identifies open ports on a host or across the network, which can help surface unexpected services and infer firewall configuration.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Run against your own boxes to verify only intended ports are exposed — treat any unexpected open port as something to investigate immediately.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Firewall</span><span class="cat-line"></span></div>
+      <div class="field-body" style="font-size:12.5px;color:var(--text-dim);padding:2px 0 8px;">The full <code>iptables</code> rule engine is covered under <strong>Programs &amp; Tools</strong>. The two commands below are simpler front-ends for it, and vary by distro.</div>
+
+      <details class="cmd" id="cmd-ufw">
+        <summary><span class="chev">▶</span><code class="cmdname">ufw / firewall-cmd</code><span class="cmd-desc">— simplified firewall front-ends (distro variants)</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Friendlier commands that sit on top of the underlying kernel firewall so you don't have to write raw <a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> rules by hand. <code>ufw</code> (Uncomplicated Firewall) is Debian/Ubuntu's default. <code>firewalld</code>, controlled via <code>firewall-cmd</code>, is RHEL/CentOS/Fedora's default.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>Command</th></tr>
+              <tr><td>Debian-based (Debian, Ubuntu)</td><td><code>ufw</code></td></tr>
+              <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td><code>firewall-cmd</code> (firewalld)</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># ufw — enable, allow SSH, check status</span>
+<span class="p">$</span> ufw enable
+<span class="p">$</span> ufw allow 22/tcp
+<span class="p">$</span> ufw status verbose
+
+<span class="c"># firewalld — allow a port, then make it persistent</span>
+<span class="p">$</span> firewall-cmd --add-port=80/tcp
+<span class="p">$</span> firewall-cmd --add-port=80/tcp --permanent
+<span class="p">$</span> firewall-cmd --list-all</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Either one may not be installed/enabled by default — the raw <code>iptables</code> rules are always underneath, so it's worth checking both layers when auditing a firewall.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Kernel &amp; Hardening</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-sysctl">
+        <summary><span class="chev">▶</span><code class="cmdname">sysctl</code><span class="cmd-desc">— view and tune kernel parameters</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Reads and sets kernel runtime parameters — network stack behavior, memory handling, and other low-level settings that live under <code>/proc/sys</code>. Changes can be made live or made permanent via <code>/etc/sysctl.conf</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Direct system hardening: disable IP forwarding on a host that shouldn't route traffic, enable SYN cookies to resist SYN-flood attacks, disable ICMP redirects, restrict core dumps.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> sysctl &lt;parameter&gt;              <span class="c"># read current value</span>
+<span class="p">$</span> sysctl -w &lt;parameter&gt;=&lt;value&gt;   <span class="c"># set live (not persistent)</span></pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Disable IP forwarding (this box shouldn't route traffic)</span>
+<span class="p">$</span> sysctl -w net.ipv4.ip_forward=0
+
+<span class="c"># Enable SYN cookies to resist SYN-flood DoS</span>
+<span class="p">$</span> sysctl -w net.ipv4.tcp_syncookies=1</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Live changes with <code>-w</code> don't survive a reboot — and some kernel parameters can break networking or services if set incorrectly. Test before writing changes into <code>/etc/sysctl.conf</code> permanently.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Help &amp; Documentation</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-manhelp">
+        <summary><span class="chev">▶</span><code class="cmdname">man / --help / less / more</code><span class="cmd-desc">— getting help without leaving the terminal</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>man &lt;command&gt;</code> opens the full manual page for a command. <code>--help</code> as a flag on most commands prints a short usage summary. <code>less</code>/<code>more</code> page through long output or files one screen at a time — essential on headless servers where you can't just scroll a GUI window.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> man &lt;command&gt;
+<span class="p">$</span> &lt;command&gt; --help
+<span class="p">$</span> less &lt;file&gt;</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-headtail">
+        <summary><span class="chev">▶</span><code class="cmdname">head / tail</code><span class="cmd-desc">— show the start or end of a file</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>head</code> prints the first lines of a file; <code>tail</code> prints the last lines. Fast way to check a huge log file without opening the whole thing.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> head &lt;file&gt;
+<span class="p">$</span> tail &lt;file&gt;</pre></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Environment &amp; Shell</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-pathenv">
+        <summary><span class="chev">▶</span><code class="cmdname">$PATH / env</code><span class="cmd-desc">— command search order &amp; environment variables</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p><code>$PATH</code> is the environment variable that defines which directories the shell searches, and in what order, when you type a command name. <code>env</code> lists every currently set environment variable.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>An attacker can plant a malicious binary earlier in <code>$PATH</code> than the real one, so a common command silently runs their version instead. Worth checking <code>$PATH</code> order if something behaves unexpectedly.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> echo $PATH
+<span class="p">$</span> env</pre></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-alias">
+        <summary><span class="chev">▶</span><code class="cmdname">alias</code><span class="cmd-desc">— create a shortcut for a longer command</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Defines a shorthand name that expands to a longer command when typed.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Worth checking a shell's aliases when investigating a box — an alias can quietly redirect a trusted command name to something malicious.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-bashscript">
+        <summary><span class="chev">▶</span><code class="cmdname">bash scripts</code><span class="cmd-desc">— running and writing shell scripts</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>A bash script is a file of shell commands run in sequence. It can be executed two ways, and bash syntax (like for-loops) can also be run directly on the command line without a script file at all.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> ./my_script.sh
+<span class="p">$</span> bash my_script.sh
+
+<span class="c"># inline for-loop, no script file needed</span>
+<span class="p">$</span> for line in $(cat poem); do echo $line; done</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>./file_name</code> requires the file to have the executable (<code>x</code>) permission bit set — see <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>. <code>bash file_name</code> works without it.</p></div></div>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+  <!-- SECTION 2: PROGRAMS & TOOLS -->
+  <details class="section">
+    <summary>
+      <span class="chev">▶</span>
+      <span class="idx">02</span>
+      <span class="title">Programs &amp; Tools</span>
+      <span class="count">multi-command systems</span>
+    </summary>
+    <div class="section-body">
+
+      <details class="cmd" id="tool-iptables">
+        <summary><span class="chev">▶</span><code class="cmdname">iptables</code><span class="cmd-desc">— host-based firewall rule engine</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>A stateless firewall built around a Table → Chain → Rule structure, plus a default policy. Rules are checked top-down; the first match wins. Not always enabled by default — some distros use <code>ufw</code> as a friendlier front-end instead.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Locking a box down to only the traffic it actually needs. Firewalls should follow the <strong>implicit deny</strong> principle: block by default, allow by exception. More open ports = larger attack surface.</p></div></div>
+          <div class="field"><div class="field-label">The Filter Table's 3 Chains</div>
+            <table class="opts">
+              <tr><th>Chain</th><th>Applies to</th></tr>
+              <tr><td>INPUT</td><td>Traffic coming into this host</td></tr>
+              <tr><td>OUTPUT</td><td>Traffic leaving this host</td></tr>
+              <tr><td>FORWARD</td><td>Traffic passing through this host to somewhere else</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Core Syntax</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-P</td><td>Set the default policy for a chain</td></tr>
+              <tr><td>-A</td><td>Append a new rule to a chain</td></tr>
+              <tr><td>-L --line-numbers</td><td>List current rules with line numbers</td></tr>
+              <tr><td>-F</td><td>Flush (delete) all rules</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># List current rules</span>
+<span class="p">$</span> iptables -L --line-numbers
+
+<span class="c"># Set default-deny policy on all 3 chains</span>
+<span class="p">$</span> iptables -P INPUT DROP
+<span class="p">$</span> iptables -P OUTPUT DROP
+<span class="p">$</span> iptables -P FORWARD DROP
+
+<span class="c"># Allow incoming HTTP (port 80)</span>
+<span class="p">$</span> iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+<span class="c"># Allow outgoing responses to connections we started</span>
+<span class="p">$</span> iptables -A OUTPUT -p tcp -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</pre></div>
+          <div class="field"><div class="field-label">Persisting Rules</div>
+            <div class="field-body"><p>Rules built with <code>iptables -A</code>/<code>-P</code> live in memory only and vanish on reboot unless explicitly saved. The save/restore mechanism varies by distro:</p></div>
+            <pre class="example"><span class="c"># Save current rules to a file</span>
+<span class="p">$</span> iptables-save &gt; /etc/iptables/rules.v4
+
+<span class="c"># Restore rules from that file (e.g. on boot, via a startup hook)</span>
+<span class="p">$</span> iptables-restore &lt; /etc/iptables/rules.v4</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p><code>iptables -F</code> only use this with complete understanding — it can affect other services in unexpected ways. Document any flush for the team. Setting a default DROP policy <em>before</em> your allow rules are in place can lock out your own remote access — write the ACCEPT rules for established connections and your own management access first, then set the deny policy last.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-tmux">
+        <summary><span class="chev">▶</span><code class="cmdname">tmux</code><span class="cmd-desc">— terminal multiplexer (split screen, persistent sessions)</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Lets a single terminal hold multiple windows and split panes, and keeps sessions running even if you disconnect. Especially valuable on headless servers with no GUI.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Keep a long-running task (a scan, a log tail, a monitoring loop) alive in a detached session while you work elsewhere, then reattach later without losing anything.</p></div></div>
+          <div class="field"><div class="field-label">Prefix: Ctrl + b</div>
+            <table class="opts">
+              <tr><th>Keys</th><th>What it does</th></tr>
+              <tr><td>prefix c</td><td>New window</td></tr>
+              <tr><td>prefix [number] / p / n</td><td>Switch windows (by number, previous, next)</td></tr>
+              <tr><td>prefix &amp;</td><td>Delete current window</td></tr>
+              <tr><td>prefix "</td><td>Split pane horizontally</td></tr>
+              <tr><td>prefix %</td><td>Split pane vertically</td></tr>
+              <tr><td>prefix [arrow key]</td><td>Switch between panes</td></tr>
+              <tr><td>tmux</td><td>Start a new session</td></tr>
+              <tr><td>prefix d</td><td>Detach from session</td></tr>
+              <tr><td>tmux a</td><td>Reattach to a session</td></tr>
+              <tr><td>prefix z</td><td>Zoom current pane fullscreen</td></tr>
+            </table></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-pam">
+        <summary><span class="chev">▶</span><code class="cmdname">PAM</code><span class="cmd-desc">— Pluggable Authentication Modules</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The framework that manages authentication across the system — how login, sudo, and other services decide whether to let a user in. Configured through a stack of modules rather than one file.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Core system hardening target — reviewing the PAM config can reveal weakened or bypassed authentication rules planted by an attacker.</p></div></div>
+          <div class="field"><div class="field-label">Distro Variations</div>
+            <table class="opts distro">
+              <tr><th>Distro family</th><th>Config file(s)</th></tr>
+              <tr><td>Debian-based</td><td><code>common-auth</code></td></tr>
+              <tr><td>RHEL-based</td><td><code>system-auth</code> and <code>password-auth</code></td></tr>
+            </table></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-cron">
+        <summary><span class="chev">▶</span><code class="cmdname">Cron</code><span class="cmd-desc">— scheduled task system</span><span class="risk-badge">⚠ risk</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Cron runs tasks automatically at regular intervals — daily, weekly, monthly, or on a custom schedule. Per-user schedules are edited with <a href="#cmd-crontab" class="xref" data-target="cmd-crontab">crontab -e</a>; system-wide entries live in <code>/etc/cron.d</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>One of the most common persistence mechanisms — a scheduled task that keeps re-establishing an attacker's access even after you've cleaned up the initial compromise. Always check both the per-user crontab and <code>/etc/cron.d</code> for anything unfamiliar.</p></div></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Edit current user's scheduled tasks</span>
+<span class="p">$</span> crontab -e
+
+<span class="c"># Check system-wide cron entries</span>
+<span class="p">$</span> ls /etc/cron.d</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>If a scheduled task has no legitimate use, disable it — <code>systemctl stop/disable/mask</code> the cron service is a last resort if the whole subsystem is compromised, but usually removing the specific malicious entry is the right move.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-netmgr">
+        <summary><span class="chev">▶</span><code class="cmdname">NetworkManager</code><span class="cmd-desc">— network connection management service</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Manages network connections and interfaces at the OS level. Which service handles this depends on the distro — <code>NetworkManager</code>, <code>systemd-networkd</code>, and <code>netplan</code> are the common ones.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Make sure the relevant service is actually running (check with <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a>) before troubleshooting connectivity — and always verify network changes actually applied and persisted.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-auditd">
+        <summary><span class="chev">▶</span><code class="cmdname">auditd</code><span class="cmd-desc">— kernel-level audit logging</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>The Linux Audit daemon logs security-relevant events at the kernel level — file access, syscalls, authentication events — far more granular than standard syslog. Rules are managed with <code>auditctl</code>, and logs are searched with <code>ausearch</code>.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The real answer to "who touched this file, and when." Set a watch rule on a critical file (like <code>/etc/passwd</code> or <code>/etc/sudoers</code>) and get a log entry for every read, write, or attribute change against it — including by root.</p></div></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Watch a critical file for any write/attribute change</span>
+<span class="p">$</span> auditctl -w /etc/passwd -p wa -k passwd_watch
+
+<span class="c"># Search the audit log for events tagged with that watch</span>
+<span class="p">$</span> ausearch -k passwd_watch</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Not installed/running by default on every distro — check with <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl status auditd</a> and set it up as part of hardening a box you'll be defending for a while.</p></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="tool-rootkit">
+        <summary><span class="chev">▶</span><code class="cmdname">chkrootkit / rkhunter</code><span class="cmd-desc">— rootkit and backdoor scanners</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Scan the system for known rootkit signatures, common backdoor techniques, and suspicious system binary modifications. Not foolproof — signature-based — but a fast first pass.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Quick sanity check on a box you've inherited or suspect is compromised — run early, before you've made other changes that could mask what the scan is looking for.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> chkrootkit
+<span class="p">$</span> rkhunter --check</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Treat a clean scan as a data point, not proof of a clean system — these tools only catch known patterns. Pair with manual review (<a href="#cmd-find" class="xref" data-target="cmd-find">find</a> for SUID binaries, <a href="#cmd-ps" class="xref" data-target="cmd-ps">ps --forest</a> for odd process trees) rather than relying on either alone.</p></div></div>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+  <!-- SECTION 3: QUICK START & ROUTINE CHECKS -->
+  <details class="section">
+    <summary>
+      <span class="chev">▶</span>
+      <span class="idx">03</span>
+      <span class="title">Quick Start &amp; Routine Checks</span>
+      <span class="count">3 tracks</span>
+    </summary>
+    <div class="section-body">
+      <div class="field-body" style="font-size:12.5px;color:var(--text-dim);margin-bottom:4px;">
+        Three separate tracks: <strong>A</strong> is read-only recon — safe to run any time, on any box. <strong>B</strong> and <strong>C</strong> actively change the system, so they're kept separate from recon and from each other. Run A first. Only move into B or C once you understand what's already there.
+      </div>
+
+      <!-- TRACK A -->
+      <details class="track" open>
+        <summary>
+          <span class="chev">▶</span>
+          <span class="track-letter">A</span>
+          <span class="track-title">Initial Recon &amp; Routine Checks</span>
+          <span class="track-sub">read-only</span>
+        </summary>
+        <div class="track-body">
+          <div class="track-intro">Look and understand before you touch anything. Nothing in this track changes the system.</div>
+          <ol class="checklist">
+            <li>
+              <div class="step-title">Confirm who you are and what you can do</div>
+              <div class="step-body">Check your own identity, group memberships, and who else has elevated access.</div>
+              <pre class="example"><span class="p">$</span> id
+<span class="p">$</span> cat /etc/sudoers</pre>
+            </li>
+            <li>
+              <div class="step-title">Check the Holy Square of user management</div>
+              <div class="step-body">These four files are the foundation of who can log in and with what access.</div>
+              <pre class="example"><span class="p">$</span> less /etc/passwd
+<span class="p">$</span> less /etc/group
+<span class="p">$</span> less /etc/shadow
+<span class="p">$</span> less /etc/sudoers</pre>
+            </li>
+            <li>
+              <div class="step-title">Enumerate accounts with real login shells</div>
+              <div class="step-body">Surface every account that can actually log in — an unexpected one is a strong compromise indicator.</div>
+              <pre class="example"><span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre>
+            </li>
+            <li>
+              <div class="step-title">Review running processes</div>
+              <div class="step-body">Look for anything unfamiliar, oddly named, or running from an unusual path.</div>
+              <pre class="example"><span class="p">$</span> ps -ef --forest | less</pre>
+            </li>
+            <li>
+              <div class="step-title">Check for persistence via cron</div>
+              <div class="step-body">Review both the per-user schedule and the system-wide cron directory.</div>
+              <pre class="example"><span class="p">$</span> crontab -e
+<span class="p">$</span> ls /etc/cron.d</pre>
+            </li>
+            <li>
+              <div class="step-title">Glance at network config and listening ports</div>
+              <div class="step-body">Just looking here — confirm your own IP, then see what's listening and who's connected. Full network setup lives in Track C.</div>
+              <pre class="example"><span class="p">$</span> ip a
+<span class="p">$</span> ss -tulnp
+<span class="p">$</span> nmap localhost</pre>
+            </li>
+            <li>
+              <div class="step-title">Review the current firewall rule set</div>
+              <div class="step-body">See what's currently allowed. Building or changing rules lives in Track B — this step is only about seeing what's already there.</div>
+              <pre class="example"><span class="p">$</span> iptables -L --line-numbers
+<span class="p">$</span> ufw status verbose</pre>
+            </li>
+            <li>
+              <div class="step-title">Spot-check for tampering</div>
+              <div class="step-body">A fast pass for common indicators before deciding what needs deeper investigation.</div>
+              <pre class="example"><span class="p">$</span> find / -perm -4000 -type f 2>/dev/null
+<span class="p">$</span> lsattr /etc/ssh/sshd_config</pre>
+            </li>
+            <li>
+              <div class="step-title">Document everything</div>
+              <div class="step-body">Write down what you found before moving into Track B or C — this is your baseline.</div>
+            </li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- TRACK B -->
+      <details class="track">
+        <summary>
+          <span class="chev">▶</span>
+          <span class="track-letter">B</span>
+          <span class="track-title">Firewall Setup &amp; Hardening</span>
+          <span class="track-sub">active — changes the system</span>
+        </summary>
+        <div class="track-body">
+          <div class="track-intro">Order matters here. Writing the deny policy before your allow rules locks you out. See <a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> and <a href="#cmd-ufw" class="xref" data-target="cmd-ufw">ufw/firewall-cmd</a> for full flag references.</div>
+          <ol class="checklist">
+            <li>
+              <div class="step-title">Define what actually needs to be reachable</div>
+              <div class="step-body">List the management access you need (e.g. SSH) and the service ports this box legitimately serves, before writing a single rule.</div>
+            </li>
+            <li>
+              <div class="step-title">Write allow rules for that list first</div>
+              <div class="step-body">Every port that needs to stay open gets an explicit ACCEPT rule before anything gets blocked.</div>
+              <pre class="example"><span class="c"># Example: allow SSH and HTTP</span>
+<span class="p">$</span> iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+<span class="p">$</span> iptables -A INPUT -p tcp --dport 80 -j ACCEPT</pre>
+            </li>
+            <li>
+              <div class="step-title">Allow outbound responses to established connections</div>
+              <div class="step-body">Without this, replies to legitimate outbound traffic get dropped too.</div>
+              <pre class="example"><span class="p">$</span> iptables -A OUTPUT -p tcp -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</pre>
+            </li>
+            <li>
+              <div class="step-title">Set the default-deny policy last</div>
+              <div class="step-body">Only after steps 2–3 are confirmed in place. This is the step that actually implements implicit deny.</div>
+              <pre class="example"><span class="p">$</span> iptables -P INPUT DROP
+<span class="p">$</span> iptables -P OUTPUT DROP
+<span class="p">$</span> iptables -P FORWARD DROP</pre>
+            </li>
+            <li>
+              <div class="step-title">Verify from a second session before closing your current one</div>
+              <div class="step-body">Open a new connection attempt (a second SSH session, a fresh terminal) to confirm you still have access — don't close the session you're working in until it's confirmed.</div>
+            </li>
+            <li>
+              <div class="step-title">Persist the rules so they survive a reboot</div>
+              <div class="step-body">Raw <code>iptables</code> rules are in-memory only by default and vanish on restart. Save them (method varies by distro — e.g. <code>iptables-save</code>, or use <code>ufw</code>/<code>firewalld</code> which persist automatically).</div>
+              <pre class="example"><span class="p">$</span> iptables-save > /etc/iptables/rules.v4</pre>
+            </li>
+            <li>
+              <div class="step-title">Document exactly what's open and why</div>
+              <div class="step-body">Every allowed port, tied to the service that needs it. Makes the next audit — and the next person — much faster.</div>
+            </li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- TRACK C -->
+      <details class="track">
+        <summary>
+          <span class="chev">▶</span>
+          <span class="track-letter">C</span>
+          <span class="track-title">Network Setup &amp; Configuration</span>
+          <span class="track-sub">active — changes the system</span>
+        </summary>
+        <div class="track-body">
+          <div class="track-intro">Which tool manages this varies by distro — see <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager / systemd-networkd / netplan</a> for that variation.</div>
+          <ol class="checklist">
+            <li>
+              <div class="step-title">Identify the interface and its current state</div>
+              <div class="step-body">Confirm which interface you're configuring and what it currently has assigned, if anything.</div>
+              <pre class="example"><span class="p">$</span> ip a</pre>
+            </li>
+            <li>
+              <div class="step-title">Assign the intended static IP</div>
+              <div class="step-body">Set the address and subnet mask for this host. Exact syntax depends on the distro's network manager — could be a GUI wired-connection dialog, a netplan YAML file, or <code>nmcli</code>.</div>
+              <pre class="example"><span class="c"># Example using ip (temporary — won't survive reboot on its own)</span>
+<span class="p">$</span> ip addr add 192.168.1.12/24 dev eth0</pre>
+            </li>
+            <li>
+              <div class="step-title">Set the default gateway</div>
+              <div class="step-body">Point the host at the router/gateway responsible for traffic leaving the local subnet.</div>
+              <pre class="example"><span class="p">$</span> ip route add default via 192.168.1.1</pre>
+            </li>
+            <li>
+              <div class="step-title">Verify DNS resolution</div>
+              <div class="step-body">Confirm the host can resolve names, not just reach IPs directly.</div>
+              <pre class="example"><span class="p">$</span> cat /etc/resolv.conf</pre>
+            </li>
+            <li>
+              <div class="step-title">Make the change persistent</div>
+              <div class="step-body">Manual <code>ip</code> commands don't survive a reboot. Confirm the change is saved through whichever network manager the distro actually uses.</div>
+            </li>
+            <li>
+              <div class="step-title">Confirm it actually applied</div>
+              <div class="step-body">Re-check the interface after applying — don't assume the config took effect just because no error was shown.</div>
+              <pre class="example"><span class="p">$</span> ip a</pre>
+            </li>
+            <li>
+              <div class="step-title">Test connectivity end-to-end</div>
+              <div class="step-body">Ping the gateway, then something beyond it, then confirm DNS-based resolution works too.</div>
+              <pre class="example"><span class="p">$</span> ping -c 3 192.168.1.1</pre>
+            </li>
+            <li>
+              <div class="step-title">Document the IP scheme</div>
+              <div class="step-body">Record what's assigned where — critical for the team when multiple boxes are being configured together.</div>
+            </li>
+          </ol>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+
+  <!-- SECTION 4: REFERENCE / GLOSSARY -->
+  <details class="section">
+    <summary>
+      <span class="chev">▶</span>
+      <span class="idx">04</span>
+      <span class="title">Reference / Glossary</span>
+      <span class="count">concepts &amp; context</span>
+    </summary>
+    <div class="section-body">
+      <dl class="glossary">
+        <div class="glossary-item">
+        <dt>Absolute vs. Relative Path</dt>
+        <dd>An absolute path always starts from the filesystem root (<code>/</code>) — e.g. <code>/home/user/Desktop/</code>. A relative path starts from wherever you currently are (<code>pwd</code>) — e.g. <code>var/www/html/</code>. <code>.</code> means the current directory, <code>..</code> means the parent directory, and <code>~</code> means your home directory.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>root vs. /root vs. /</dt>
+        <dd><strong>root user</strong> (UID 0) is the system administrator account. <strong>/root</strong> is that user's home directory. <strong>/</strong> is the root of the entire filesystem — the top-level directory everything else lives under. Three different things that share a name.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>UID / GID Ranges</dt>
+        <dd>User ID 0 is always root. IDs below 1000 are typically reserved for system services. Real human user accounts usually start at UID 1000 and above.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Octal File Permissions</dt>
+        <dd>Each permission digit is a sum: read = 4, write = 2, execute = 1. <code>rwx</code> = 4+2+1 = 7. So <code>rwxr--r--</code> = 744, and <code>r-x-w---x</code> = 755. Three digits total, for owner / group / others.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>PAM (Pluggable Authentication Module)</dt>
+        <dd>The system-wide framework that governs authentication — login, sudo, SSH, and more all defer to it. Config location differs by distro family (<code>common-auth</code> on Debian, <code>system-auth</code>/<code>password-auth</code> on RHEL).</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>iptables Chains &amp; Implicit Deny</dt>
+        <dd>The 3 core chains are INPUT (incoming), OUTPUT (outgoing), and FORWARD (pass-through) traffic. A firewall following <strong>implicit deny</strong> blocks everything by default and only allows specific, intentional exceptions — the opposite of blocking a known-bad list.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>STDIN / STDOUT / Pipes</dt>
+        <dd>STDIN (<code>&lt;</code>) feeds input into a command. STDOUT (<code>&gt;</code>) redirects a command's output into a file. A pipe (<code>|</code>) connects one command's output directly to the next command's input — the building block of most chained one-liners.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Environment Variables</dt>
+        <dd>Variables like <code>$PATH</code> that shape how the shell behaves — in this case, which directories it searches (and in what order) when resolving a command name. View them all with <code>env</code>.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Distro Families</dt>
+        <dd>Distros cluster into families that share tooling: Debian-based (Debian, Ubuntu — <code>apt</code>), RHEL-based (RHEL, CentOS, Fedora — <code>yum</code>), plus others like Alpine (<code>apk</code>) and Arch (<code>pacman</code>). Knowing the family tells you which command syntax to expect.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Least Privilege</dt>
+        <dd>Give every account and process only the access it actually needs to do its job — nothing more. Reduces how much damage any single compromised account or service can do.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>The sudo Group</dt>
+        <dd>One of the highest-value things to check on any system — who's in it defines who can act as root. An unexpected member is one of the fastest indicators of compromise to check for.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>SUID / SGID</dt>
+        <dd>Special permission bits that let a file run with the permissions of its <em>owner</em> (SUID) or <em>group</em> (SGID) rather than the user who executed it. Legitimate uses exist (e.g. <code>passwd</code> needs to write to a root-owned file), but an unexpected SUID root binary is one of the most common privilege-escalation footholds — find them with <a href="#cmd-find" class="xref" data-target="cmd-find">find -perm -4000</a>.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>ACL (Access Control List)</dt>
+        <dd>A finer-grained permission layer on top of the standard owner/group/others model, letting you grant access to a specific extra user or group. Managed with <a href="#cmd-acl" class="xref" data-target="cmd-acl">getfacl/setfacl</a>; shown as a trailing <code>+</code> in <code>ls -l</code> output.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>IOC (Indicator of Compromise)</dt>
+        <dd>A specific, observable artifact that suggests a system has been compromised — a file hash, an IP address, a filename, a registry-style value, a suspicious process name. Investigations are largely the process of collecting and matching IOCs.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Persistence</dt>
+        <dd>Any mechanism an attacker sets up to survive a reboot or maintain access after the initial compromise is cleaned up — a cron job, a modified startup service, an added SSH key, an extra user account. Checking known persistence points (cron, services, authorized_keys, sudoers) is a core part of incident response.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Attack Surface</dt>
+        <dd>Everything on a system that's reachable and could potentially be exploited — every open port, running service, and installed package adds to it. Hardening is largely the process of shrinking this: disabling what isn't needed.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Anti-Forensics</dt>
+        <dd>Techniques used to hide evidence of an intrusion — clearing <a href="#cmd-history" class="xref" data-target="cmd-history">shell history</a>, touching timestamps to disguise when a file was really modified, deleting or tampering with logs. Their presence (e.g. a suspiciously empty history file) can itself be a signal something happened.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>/var/log vs. the systemd Journal</dt>
+        <dd>Two overlapping logging systems exist on most modern distros: traditional plaintext files under <code>/var/log</code>, and the binary systemd journal read with <a href="#cmd-journalctl" class="xref" data-target="cmd-journalctl">journalctl</a>. Depending on the distro's configuration, one, the other, or both may hold the events you're looking for — check both if something seems to be missing.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>CIDR Notation &amp; Subnet Mask</dt>
+        <dd>Two ways of expressing the same thing: how many bits of an IP address identify the network vs. the individual host. <code>192.168.1.12/24</code> means the first 24 bits are the network portion — equivalent to a subnet mask of <code>255.255.255.0</code>. A smaller number after the slash (e.g. <code>/16</code>) means a larger network with more possible hosts.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Default Gateway</dt>
+        <dd>The router a host sends traffic to when the destination isn't on its local subnet — effectively "the way out." Set with <a href="#cmd-ip" class="xref" data-target="cmd-ip">ip route add default via</a>. Get this wrong and the host can talk to local devices but nothing beyond them.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>DNS &amp; /etc/resolv.conf</dt>
+        <dd>DNS resolves human-readable names (like a hostname) to IP addresses. On Linux, which DNS server(s) a host queries is typically listed in <code>/etc/resolv.conf</code> — worth checking directly if name resolution isn't working even though raw IP connectivity is fine.</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>Connection Tracking &amp; Stateful Firewalls</dt>
+        <dd>A stateful firewall remembers which connections it already allowed, so it can automatically permit the return traffic without a separate rule for it. This is what <code>--ctstate ESTABLISHED,RELATED</code> refers to in <a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> rules — "let responses to traffic we already approved back in."</dd>
+        </div>
+
+        <div class="glossary-item">
+        <dt>SYN Cookies</dt>
+        <dd>A kernel-level defense against SYN-flood denial-of-service attacks, where an attacker opens huge numbers of half-finished connections to exhaust a server's resources. Enabling SYN cookies (<a href="#cmd-sysctl" class="xref" data-target="cmd-sysctl">sysctl</a>) lets the kernel handle those connection attempts without committing resources until they're confirmed legitimate.</dd>
+        </div>
+      </dl>
+    </div>
+  </details>
+
+  <div class="footer-note">Cyber Defense Linux Field Guide — v1</div>
+
+</div>
+
+<script>
+(function(){
+  var searchInput = document.getElementById('search');
+  var allCmds = Array.prototype.slice.call(document.querySelectorAll('.cmd'));
+  var allTracks = Array.prototype.slice.call(document.querySelectorAll('.track'));
+  var allGlossaryItems = Array.prototype.slice.call(document.querySelectorAll('.glossary-item'));
+  var allSearchable = allCmds.concat(allTracks).concat(allGlossaryItems);
+  var allSections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+
+  searchInput.addEventListener('input', function(){
+    var q = this.value.trim().toLowerCase();
+    if(!q){
+      allSearchable.forEach(function(c){ c.classList.remove('hide'); });
+      return;
+    }
+    allSearchable.forEach(function(c){
+      var text = c.textContent.toLowerCase();
+      var match = text.indexOf(q) !== -1;
+      c.classList.toggle('hide', !match);
+      if(match && c.tagName === 'DETAILS') c.open = true;
+    });
+    allSections.forEach(function(s){
+      var items = s.querySelectorAll('.cmd, .track, .glossary-item');
+      if(items.length === 0) return;
+      var anyVisible = Array.prototype.some.call(items, function(c){ return !c.classList.contains('hide'); });
+      if(anyVisible) s.open = true;
+    });
+  });
+
+  document.getElementById('expandAll').addEventListener('click', function(){
+    document.querySelectorAll('details').forEach(function(d){ d.open = true; });
+  });
+  document.getElementById('collapseAll').addEventListener('click', function(){
+    document.querySelectorAll('details.cmd').forEach(function(d){ d.open = false; });
+    document.querySelectorAll('details.track').forEach(function(d){ d.open = false; });
+    document.querySelectorAll('details.section').forEach(function(d){ d.open = false; });
+  });
+
+  document.querySelectorAll('pre.example').forEach(function(pre){
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'copy';
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var text = pre.innerText.replace(/copy$/,'').trim();
+      navigator.clipboard.writeText(text).then(function(){
+        btn.textContent = 'copied';
+        setTimeout(function(){ btn.textContent = 'copy'; }, 1400);
+      });
+    });
+    pre.appendChild(btn);
+  });
+
+  document.querySelectorAll('a.xref').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var targetId = this.getAttribute('data-target');
+      var target = document.getElementById(targetId);
+      if(!target) return;
+      target.open = true;
+      var parentSection = target.closest('details.section');
+      if(parentSection) parentSection.open = true;
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      target.classList.add('flash');
+      setTimeout(function(){ target.classList.remove('flash'); }, 1200);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
