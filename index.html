@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cyber Defense Linux Field Guide</title>
+<meta name="description" content="A searchable Linux command reference for cyber defense and security hardening — commands, tools, quick-start checklists, and a concept glossary.">
+<meta name="author" content="Joe Linares">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cyber Defense Linux Field Guide">
+<meta property="og:description" content="A searchable Linux command reference for cyber defense and security hardening — commands, tools, quick-start checklists, and a concept glossary.">
+<meta property="og:url" content="https://joeantlin.github.io/cyber-defense-linux-cheatsheet/">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cyber Defense Linux Field Guide">
+<meta name="twitter:description" content="A searchable Linux command reference for cyber defense and security hardening — commands, tools, quick-start checklists, and a concept glossary.">
+
 <style>
   :root{
     --bg:         #0a0e0c;
@@ -425,6 +437,34 @@
   .step-title{font-size:13.5px;color:var(--text);font-weight:600;margin-bottom:4px;}
   .step-body{font-size:12.5px;color:var(--text-dim);margin-bottom:6px;}
 
+  /* troubleshooting issue list (symptom/cause/fix — stacked, not tabular) */
+  .issue{
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .issue:first-child{padding-top:2px;}
+  .issue:last-child{border-bottom:none;}
+  .issue-symptom{
+    font-size:13px;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:6px;
+  }
+  .issue-row{
+    font-size:12.5px;
+    color:var(--text);
+    margin-top:4px;
+    line-height:1.5;
+  }
+  .issue-label{
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--amber);
+    font-weight:700;
+    margin-right:6px;
+  }
+
   /* quick-start tracks (nested collapsibles inside section 3) */
   .track{
     border:1px solid var(--line);
@@ -495,6 +535,15 @@
     font-size:11.5px;
     text-align:center;
     margin-top:30px;
+  }
+  .footer-note a{
+    color:var(--text-dim);
+    text-decoration:none;
+    border-bottom:1px dotted var(--line);
+  }
+  .footer-note a:hover{
+    color:var(--green);
+    border-bottom-color:var(--green-dim);
   }
 
   .cmd.hide{display:none;}
@@ -670,6 +719,8 @@
             <pre class="example"><span class="p">$</span> touch new_notes.txt</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>An attacker touching files to fake or hide modification times is worth watching for during investigations — compare timestamps against expected change windows.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-stat" class="xref" data-target="cmd-stat">stat</a></div></div>
         </div>
       </details>
 
@@ -705,6 +756,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Back up a config before editing it</span>
 <span class="p">$</span> cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-mv" class="xref" data-target="cmd-mv">mv</a>, <a href="#cmd-diff" class="xref" data-target="cmd-diff">diff</a>, <a href="#cmd-git-clone" class="xref" data-target="cmd-git-clone">git clone</a></div></div>
         </div>
       </details>
 
@@ -720,6 +773,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Rename a file in place</span>
 <span class="p">$</span> mv suspicious.sh suspicious.sh.quarantined</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-cp" class="xref" data-target="cmd-cp">cp</a></div></div>
         </div>
       </details>
 
@@ -799,6 +854,9 @@
               <tr><td>-newer file</td><td>Modified more recently than a reference file</td></tr>
               <tr><td>-perm -o+w</td><td>Find world-writable files</td></tr>
               <tr><td>-type f / -type d</td><td>Restrict to files or directories</td></tr>
+              <tr><td>-a</td><td>AND between two criteria — the default even with nothing written between them</td></tr>
+              <tr><td>-o</td><td>OR between two criteria — either one matching is enough</td></tr>
+              <tr><td>! / -not</td><td>Negation — matches the opposite of whatever criterion follows</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Find every SUID binary on the system</span>
@@ -830,6 +888,8 @@
             <pre class="example"><span class="p">$</span> stat &lt;file&gt;</pre></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="p">$</span> stat /etc/ssh/sshd_config</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-touch" class="xref" data-target="cmd-touch">touch</a>, <a href="#cmd-file" class="xref" data-target="cmd-file">file</a></div></div>
         </div>
       </details>
 
@@ -847,6 +907,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Confirm a suspicious "image" isn't actually an executable</span>
 <span class="p">$</span> file profile_photo.jpg</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-stat" class="xref" data-target="cmd-stat">stat</a></div></div>
         </div>
       </details>
 
@@ -864,6 +926,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># See exactly what changed since the last known-good backup</span>
 <span class="p">$</span> diff /etc/ssh/sshd_config /etc/ssh/sshd_config.bak</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-cp" class="xref" data-target="cmd-cp">cp</a></div></div>
         </div>
       </details>
 
@@ -980,6 +1044,8 @@
               <tr><td>Ctrl + X</td><td>Exit (prompts to save)</td></tr>
               <tr><td>Y</td><td>Confirm save under the same filename</td></tr>
             </table></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-vim" class="xref" data-target="cmd-vim">vim</a></div></div>
         </div>
       </details>
 
@@ -999,6 +1065,8 @@
             </table></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Run <code>vimtutor</code> in the command line for an interactive walkthrough if it's unfamiliar.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-nano" class="xref" data-target="cmd-nano">nano</a></div></div>
         </div>
       </details>
 
@@ -1021,7 +1089,8 @@
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
               <tr><td>-i</td><td>Case-insensitive match</td></tr>
-              <tr><td>-r / -R</td><td>Recursive search through a directory</td></tr>
+              <tr><td>-r</td><td>Recursive search through a directory — but skips symlinks it encounters while recursing, so a directory full of symlinks (like Apache's <code>sites-enabled/</code>) can silently match nothing</td></tr>
+              <tr><td>-R</td><td>Same as -r, but follows every symlink it finds. Use this instead of -r when the directory being searched is made of symlinks.</td></tr>
               <tr><td>-v</td><td>Invert match — show lines that don't match</td></tr>
               <tr><td>-E</td><td>Extended regex (enables <code>|</code>, <code>+</code>, <code>{}</code> without escaping)</td></tr>
               <tr><td>-n</td><td>Show line numbers with matches</td></tr>
@@ -1094,6 +1163,29 @@
             <div class="field-body"><p>Extracting one column out of structured output — usernames from <code>/etc/passwd</code>, a specific field from a CSV log, or a PID from <code>ps</code> output.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> awk &lt;options&gt; &lt;script&gt; &lt;input&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-F sep</td><td>Set the field separator — what awk splits each line on. Defaults to whitespace if not set.</td></tr>
+              <tr><td>-v var=value</td><td>Assign a variable before the script runs — a way to pass a shell value into awk</td></tr>
+              <tr><td>-f scriptfile</td><td>Read the awk program from a file instead of typing it inline</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Built-in Variables</div>
+            <table class="opts">
+              <tr><th>Variable</th><th>What it holds</th></tr>
+              <tr><td>$0</td><td>The entire current line, unsplit</td></tr>
+              <tr><td>$1, $2, $3...</td><td>Individual fields, split on the separator — $1 is the first field, $2 the second, and so on</td></tr>
+              <tr><td>NF</td><td>Number of fields on the current line — <code>$NF</code> refers to the last field, whatever position that happens to be</td></tr>
+              <tr><td>NR</td><td>The current line/record number, counting from 1</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Conditional Operators</div>
+            <div class="field-body"><p>Script syntax, not command-line flags — used inside the quoted script to combine field comparisons into one condition, evaluated fresh for every line.</p></div>
+            <table class="opts">
+              <tr><th>Symbol</th><th>Behavior</th></tr>
+              <tr><td>&amp;&amp;</td><td>Both conditions must be true</td></tr>
+              <tr><td>||</td><td>Either condition being true is enough</td></tr>
+              <tr><td>!</td><td>Negation — true becomes false and vice versa</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Print the 2nd comma-separated field of a CSV</span>
 <span class="p">$</span> awk -F ',' '{print $2}' data.csv
@@ -1101,27 +1193,39 @@
 <span class="c"># Numeric field comparison — only print lines where field 3 (UID)</span>
 <span class="c"># is 1000 or higher, e.g. filtering /etc/passwd to real user</span>
 <span class="c"># accounts and excluding system/service accounts</span>
-<span class="p">$</span> awk -F ':' '$3 >= 1000 {print $1}' /etc/passwd</pre></div>
+<span class="p">$</span> awk -F ':' '$3 >= 1000 {print $1}' /etc/passwd
+
+<span class="c"># Compound condition: real user accounts only — UID 1000 or higher</span>
+<span class="c"># AND below the "nobody" account's UID, excluding both service</span>
+<span class="c"># and anonymous accounts</span>
+<span class="p">$</span> awk -F ':' '$3 >= 1000 &amp;&amp; $3 < 65534 {print $1}' /etc/passwd
+
+<span class="c"># Always print the LAST field on each line, regardless of how</span>
+<span class="c"># many fields a given line actually has</span>
+<span class="p">$</span> awk '{print $NF}' varied_output.txt</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-sed" class="xref" data-target="cmd-sed">sed</a>, <a href="#ref-regex" class="xref" data-target="ref-regex">Regex Quick Reference</a></div></div>
         </div>
       </details>
 
       <details class="cmd" id="cmd-redirect">
-        <summary><span class="chev">▶</span><code class="cmdname">&lt; &gt; &gt;&gt; |</code><span class="cmd-desc">— I/O redirection &amp; pipes</span></summary>
+        <summary><span class="chev">▶</span><code class="cmdname">&lt; &gt; &gt;&gt; | &amp;&amp; || ;</code><span class="cmd-desc">— I/O redirection, pipes &amp; command chaining</span></summary>
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Every command has three data streams: <strong>STDIN</strong> (input it reads), <strong>STDOUT</strong> (normal output), and <strong>STDERR</strong> (error output, kept separate from STDOUT on purpose). Redirection sends any of these to a file instead of the screen; a pipe sends one command's STDOUT straight into the next command's STDIN, without a file in between at all.</p></div>
+            <div class="field-body"><p>Two related but different families of shell punctuation. <strong>Redirection and pipes</strong> (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>, <code>|</code>) move <em>data</em> — a command's three streams are <strong>STDIN</strong> (input it reads), <strong>STDOUT</strong> (normal output), and <strong>STDERR</strong> (error output, kept separate on purpose). <strong>Command chaining</strong> (<code>&amp;&amp;</code>, <code>||</code>, <code>;</code>) instead connects whole <em>commands</em> based on whether the previous one succeeded or failed — nothing to do with the data they process.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
-            <div class="field-body"><p>This is how most real investigation one-liners are built: <code>cat</code> a file, pipe it through <code>grep</code> to filter, pipe that through <code>awk</code> to extract a field, then redirect the result into a file for later reference. Knowing the difference between <code>&gt;</code> and <code>&gt;&gt;</code> also matters constantly — one destroys what was there, the other doesn't.</p></div></div>
+            <div class="field-body"><p>Redirection/pipes are how most investigation one-liners get built: <code>cat</code> a file, pipe it through <code>grep</code> to filter, pipe that through <code>awk</code> to extract a field, then redirect the result into a file. Chaining is how one-liners get made <em>safe</em> — verify something worked before acting on it, or fall back to a backup step if the first attempt fails, all without writing a full script.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
             <pre class="example"><span class="p">$</span> command &lt; input_file
 <span class="p">$</span> command &gt; output_file
 <span class="p">$</span> command &gt;&gt; output_file
-<span class="p">$</span> command1 | command2</pre></div>
-          <div class="field"><div class="field-label">Relevant Operators</div>
+<span class="p">$</span> command1 | command2
+<span class="p">$</span> command1 &amp;&amp; command2
+<span class="p">$</span> command1 || command2
+<span class="p">$</span> command1 ; command2</pre></div>
+          <div class="field"><div class="field-label">Relevant Operators — Redirection &amp; Pipes</div>
             <table class="opts">
               <tr><th>Operator</th><th>What it does</th></tr>
               <tr><td>&lt;</td><td>STDIN — feed a file in as input</td></tr>
@@ -1131,7 +1235,15 @@
               <tr><td>&gt;&gt; file 2&gt;&amp;1</td><td>Redirect both STDOUT and STDERR to the same file, appending</td></tr>
               <tr><td>|</td><td>Pipe — send one command's STDOUT directly into the next command's STDIN</td></tr>
             </table></div>
-          <div class="field"><div class="field-label">Examples</div>
+          <div class="field"><div class="field-label">Relevant Operators — Command Chaining</div>
+            <div class="field-body"><p>Each command returns an exit code when it finishes — 0 for success, anything else for failure. These operators check that code, not any output.</p></div>
+            <table class="opts">
+              <tr><th>Operator</th><th>What it does</th></tr>
+              <tr><td>&amp;&amp;</td><td>Run the next command only if this one succeeded</td></tr>
+              <tr><td>||</td><td>Run the next command only if this one failed</td></tr>
+              <tr><td>;</td><td>Run the next command regardless — no dependency on success or failure at all</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples — Redirection &amp; Pipes</div>
             <pre class="example"><span class="c"># STDIN: feed a file in as input instead of typing/piping</span>
 <span class="p">$</span> sort &lt; unsorted_names.txt
 
@@ -1152,10 +1264,27 @@
 <span class="c"># Chained pipe: break it down at each | and reason through</span>
 <span class="c"># one segment at a time</span>
 <span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users</pre></div>
+          <div class="field"><div class="field-label">Examples — Command Chaining</div>
+            <pre class="example"><span class="c"># Scenario: verify before acting. Only restart the service if</span>
+<span class="c"># the config test passes — a broken config never gets loaded</span>
+<span class="p">$</span> sshd -t &amp;&amp; systemctl restart sshd
+
+<span class="c"># Scenario: fallback on failure. Try the primary check; if it</span>
+<span class="c"># fails, run something else instead of just silently stopping</span>
+<span class="p">$</span> ping -c 1 8.8.8.8 || echo "primary DNS unreachable"
+
+<span class="c"># Scenario: run regardless. Log that a check happened whether</span>
+<span class="c"># or not it succeeded — useful when the failure itself is fine,</span>
+<span class="c"># but you still need a record that it ran</span>
+<span class="p">$</span> systemctl status fail2ban ; echo "checked at $(date)" &gt;&gt; investigation_log.txt
+
+<span class="c"># Combining chaining with redirection: only append to the users</span>
+<span class="c"># file if the enumeration pipe actually produced something</span>
+<span class="p">$</span> cat /etc/passwd | grep -E ':(/bin/(bash|sh))$' | awk -F ':' '{print $1}' > users && wc -l users</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
-            <div class="field-body"><p><code>&gt;</code> overwrites silently — no warning, no confirmation. Pointing it at a file you meant to keep (a config, a log, someone else's work) destroys the original contents instantly. If you're not sure whether a file already has something worth keeping, use <code>&gt;&gt;</code> or check first.</p></div></div>
+            <div class="field-body"><p><code>&gt;</code> overwrites silently — no warning, no confirmation. Pointing it at a file you meant to keep (a config, a log, someone else's work) destroys the original contents instantly. If you're not sure whether a file already has something worth keeping, use <code>&gt;&gt;</code> or check first. Separately: <code>&amp;&amp;</code> is not just "and also run this" — it's conditional on the first command actually succeeding. A command that prints an error but still exits with a success code will let the chain continue anyway, which can be surprising if you're expecting <code>&amp;&amp;</code> to catch every kind of failure.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-tail" class="xref" data-target="cmd-tail">tail</a></div></div>
+            <div class="field-body"><a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-tail" class="xref" data-target="cmd-tail">tail</a>, <a href="#cmd-bashscript" class="xref" data-target="cmd-bashscript">bash scripts</a></div></div>
         </div>
       </details>
 
@@ -1177,11 +1306,16 @@
               <tr><td>--reference=file</td><td>Copy the mode from another file instead of typing octal</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># rwxr--r-- </span>
+            <pre class="example"><span class="c"># rwxr--r-- (on a file you own — no sudo needed)</span>
 <span class="p">$</span> chmod 744 script.sh
 
 <span class="c"># r-x-w---x</span>
-<span class="p">$</span> chmod 755 script.sh</pre></div>
+<span class="p">$</span> chmod 755 script.sh
+
+<span class="c"># Changing a file you DON'T own needs sudo</span>
+<span class="p">$</span> sudo chmod 644 /etc/ssh/sshd_config</pre></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p>Only needs <code>sudo</code> if the file belongs to someone else — the owner of a file can always change its own permissions without it. Most system files (like anything under <code>/etc</code>) are owned by root, which is why they need <code>sudo</code> even though the command looks the same either way.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Overly permissive modes (<code>777</code>) can open up a system unintentionally — set only what's needed. <code>-R</code> is especially dangerous: it applies to every file underneath, including ones that needed a different, more restrictive mode. Spot-check a directory tree before running it recursively.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1197,10 +1331,12 @@
             <div class="field-body"><p>Changes which user and/or group owns a file.</p></div>
           </div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> chown user:group &lt;file&gt;</pre></div>
+            <pre class="example"><span class="p">$</span> sudo chown user:group &lt;file&gt;</pre></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="p">$</span> chown user1:group1 notes.txt
-<span class="p">$</span> chown root:root notes.txt</pre></div>
+            <pre class="example"><span class="p">$</span> sudo chown user1:group1 notes.txt
+<span class="p">$</span> sudo chown root:root notes.txt</pre></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p>Almost always needs <code>sudo</code> — a regular user generally can't give a file away to a different owner, even a file they created themselves. That restriction exists specifically to stop someone from dodging disk quotas or accountability by handing files off to another account. Root is the exception, since root can reassign ownership freely.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Ownership backs the permission model — handing a file to the wrong owner can grant access you didn't intend, even without touching its permission bits. Worth a second look whenever ownership on a sensitive file changes unexpectedly.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1218,8 +1354,10 @@
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Lock down a critical config file so it can't be silently overwritten by an attacker (or a script) — even with root access, the immutable bit has to be removed first.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> chattr +i &lt;file&gt;   <span class="c"># make immutable</span>
-<span class="p">$</span> chattr -i &lt;file&gt;   <span class="c"># remove immutable bit</span></pre></div>
+            <pre class="example"><span class="p">$</span> sudo chattr +i &lt;file&gt;   <span class="c"># make immutable</span>
+<span class="p">$</span> sudo chattr -i &lt;file&gt;   <span class="c"># remove immutable bit</span></pre></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p>Always needs <code>sudo</code> — this changes a filesystem-level attribute, not a regular file permission, so ownership of the file alone isn't enough.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>If you set <code>+i</code> and forget, future legitimate edits (including automated ones) will silently fail. Check with <a href="#cmd-lsattr" class="xref" data-target="cmd-lsattr">lsattr</a> before troubleshooting a file that "won't save." Also depends on filesystem support, not distro directly — ext2/3/4, btrfs, and xfs all support the immutable bit, but some network or specialty filesystems don't.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1312,7 +1450,7 @@
           </div>
           <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>On Debian-family systems, a friendlier wrapper with two distinct uses: <code>adduser &lt;username&gt;</code> creates a new user, prompting for a password and creating a home directory automatically. <code>adduser &lt;username&gt; &lt;groupname&gt;</code> is a completely different action — it adds an <em>existing</em> user to an <em>existing</em> group, functioning as an alternative to <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod -aG</a>.</p></div>
+            <div class="field-body"><p>On Debian-family systems, a friendlier wrapper with two distinct uses that are easy to conflate: <code>adduser &lt;username&gt;</code> creates a new user, prompting for a password and creating a home directory automatically. <code>adduser &lt;username&gt; &lt;groupname&gt;</code> is a completely different action — it adds an <em>existing</em> user to an <em>existing</em> group as a <strong>supplementary</strong> member, functioning as an alternative to <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod -aG</a>. Neither of those touches a user's <strong>primary</strong> group — that's what <code>--ingroup</code> is for, and it only applies at creation time.</p></div>
           </div>
           <div class="field"><div class="field-label">Distro Variations</div>
             <table class="opts distro">
@@ -1321,21 +1459,28 @@
               <tr><td>RHEL-based (RHEL, CentOS, Fedora)</td><td>Usually just a symlink to <code>useradd</code> — no prompts, no group-adding usage, no friendly defaults</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> adduser &lt;username&gt;              <span class="c"># create a new user</span>
-<span class="p">$</span> adduser &lt;username&gt; &lt;groupname&gt;  <span class="c"># add existing user to existing group</span></pre></div>
+            <pre class="example"><span class="p">$</span> adduser &lt;username&gt;                    <span class="c"># create a new user</span>
+<span class="p">$</span> adduser --ingroup &lt;group&gt; &lt;username&gt;  <span class="c"># create a new user, set their primary group</span>
+<span class="p">$</span> adduser &lt;username&gt; &lt;groupname&gt;        <span class="c"># add an EXISTING user to an EXISTING group (supplementary)</span></pre></div>
           <div class="field"><div class="field-label">Relevant Options</div>
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
-              <tr><td>--ingroup group</td><td>At creation, set the user's primary group instead of the default (a new group named after them)</td></tr>
+              <tr><td>--ingroup group</td><td>Only meaningful at creation. Sets the new user's <strong>primary</strong> group to an existing group, instead of Debian's default of auto-creating a new group named after them (the "user private group" scheme). A user has exactly one primary group.</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Create a new user — prompts for password, creates home dir automatically</span>
+            <pre class="example"><span class="c"># Create a new user — Debian default: also creates a new "newintern"</span>
+<span class="c"># group and makes that this user's primary group</span>
 <span class="p">$</span> adduser newintern
 
-<span class="c"># Add that (already-existing) user to an existing group</span>
+<span class="c"># Create a new user whose primary group is an existing "developers"</span>
+<span class="c"># group instead — no new "newintern" group gets created</span>
+<span class="p">$</span> adduser --ingroup developers newintern
+
+<span class="c"># Add that (already-existing) user to an existing group as a</span>
+<span class="c"># supplementary member — their primary group is untouched</span>
 <span class="p">$</span> adduser newintern sudo</pre></div>
           <div class="field"><div class="field-label">Notes</div>
-            <div class="field-body"><p>An unfamiliar account showing up is worth investigating immediately — check its UID, shell, and home directory. The same goes for an existing account suddenly gaining group membership it shouldn't have.</p></div></div>
+            <div class="field-body"><p>An unfamiliar account showing up is worth investigating immediately — check its UID, shell, and home directory. The same goes for an existing account suddenly gaining group membership it shouldn't have — whether that's a new primary group or an added supplementary one.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>A new account is one of the clearest persistence footholds an attacker can leave behind — treat any account creation you didn't expect as an incident, not a curiosity. When creating one legitimately, confirm the UID range and shell match what's intended.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1446,13 +1591,18 @@
           <div class="field"><div class="field-label">Relevant Options</div>
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
-              <tr><td>-aG group</td><td>Add the user to an additional group (without removing them from others)</td></tr>
+              <tr><td>-aG group</td><td>Append — add the user to an additional group, leaving their existing groups untouched</td></tr>
+              <tr><td>-G group</td><td>Replace — sets the user's <em>entire</em> supplementary group list to only what's specified here, dropping every other group they were in</td></tr>
               <tr><td>-s shell</td><td>Change the user's login shell</td></tr>
               <tr><td>-L / -U</td><td>Lock / unlock the account</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Add a user to the sudo group</span>
+            <pre class="example"><span class="c"># Add a user to the sudo group — everything else they're in is kept</span>
 <span class="p">$</span> usermod -aG sudo user2
+
+<span class="c"># Without -a: replaces the ENTIRE group list with just "sudo" —</span>
+<span class="c"># removes user2 from docker, developers, or anything else they had</span>
+<span class="p">$</span> usermod -G sudo user2
 
 <span class="c"># Confirm what actually took effect</span>
 <span class="p">$</span> id user2
@@ -1462,7 +1612,7 @@
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Not the same as group policy — changes are per-user and immediate. Use <a href="#cmd-id" class="xref" data-target="cmd-id">id</a> afterward to confirm exactly what took effect.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
-            <div class="field-body"><p>Modifying group membership or shell for the wrong account can lock a legitimate user out or hand an attacker more access — verify the target account before running.</p></div></div>
+            <div class="field-body"><p>Modifying group membership or shell for the wrong account can lock a legitimate user out or hand an attacker more access — verify the target account before running. Separately: <code>-G</code> without the <code>-a</code> silently replaces the user's whole group list rather than adding to it — a single missed character turns "grant one more group" into "remove every other group they had." Always double-check for the <code>-a</code> before running this against a real account.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-id" class="xref" data-target="cmd-id">id</a>, <a href="#cmd-adduser" class="xref" data-target="cmd-adduser">adduser</a>, <a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a></div></div>
         </div>
@@ -1532,7 +1682,7 @@
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Resetting the wrong account's password locks that user out immediately — confirm the username first, and make sure you have another way in before changing your own.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a></div></div>
+            <div class="field-body"><a href="#cmd-passwd" class="xref" data-target="cmd-passwd">passwd</a>, <a href="#cmd-awk" class="xref" data-target="cmd-awk">awk</a>, <a href="#cmd-echo" class="xref" data-target="cmd-echo">echo</a></div></div>
         </div>
       </details>
 
@@ -1621,6 +1771,8 @@
 <span class="p">$</span> visudo</pre></div>
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p>Uses whatever <code>$EDITOR</code> is set to (often <code>nano</code> or <code>vim</code>). If you save a syntax error, <code>visudo</code> refuses to write the file and asks whether to re-edit, discard, or force the save — always choose re-edit or discard.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-sudo" class="xref" data-target="cmd-sudo">sudo</a></div></div>
         </div>
       </details>
 
@@ -1747,6 +1899,8 @@
           <div class="field"><div class="field-label">Examples</div>
             <pre class="example"><span class="c"># Find the PID(s) of a running SSH daemon</span>
 <span class="p">$</span> pgrep sshd</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ps" class="xref" data-target="cmd-ps">ps</a>, <a href="#cmd-kill" class="xref" data-target="cmd-kill">kill</a></div></div>
         </div>
       </details>
 
@@ -1806,6 +1960,8 @@
 
 <span class="c"># Everything logged in the last hour</span>
 <span class="p">$</span> journalctl --since "1 hour ago"</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-history" class="xref" data-target="cmd-history">history</a>, <a href="#tool-cron" class="xref" data-target="tool-cron">Cron</a></div></div>
         </div>
       </details>
 
@@ -1822,6 +1978,8 @@
             <pre class="example"><span class="p">$</span> history</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Don't clear history on a box you're investigating — it's evidence. Only clear your own working history, and only when that's genuinely appropriate.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-w" class="xref" data-target="cmd-w">w</a>, <a href="#cmd-last" class="xref" data-target="cmd-last">last</a>, <a href="#cmd-lastlog" class="xref" data-target="cmd-lastlog">lastlog</a></div></div>
         </div>
       </details>
 
@@ -1920,27 +2078,33 @@
           <div class="field"><div class="field-label">Relevant Actions</div>
             <table class="opts">
               <tr><th>Action</th><th>What it does</th></tr>
-              <tr><td>status</td><td>Show whether a service is running</td></tr>
+              <tr><td>status</td><td>Show whether a service is running, plus recent log lines. Output goes through a pager — press <code>q</code> to exit back to the prompt.</td></tr>
+              <tr><td>is-active</td><td>Quick yes/no check — just prints "active" or "inactive", nothing else. Faster to read (or script against) than parsing full <code>status</code> output.</td></tr>
               <tr><td>start / stop</td><td>Start or stop the service now</td></tr>
               <tr><td>restart</td><td>Stop then start (e.g. after a config change)</td></tr>
               <tr><td>enable / disable</td><td>Toggle whether it launches automatically at boot</td></tr>
               <tr><td>mask</td><td>Block a service from being started at all, even manually — stronger than disable</td></tr>
             </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Check if SSH is running (systemd)</span>
+            <pre class="example"><span class="c"># Check if SSH is running — read-only, no sudo needed</span>
 <span class="p">$</span> systemctl status sshd
+
+<span class="c"># Quick active/inactive check, no pager, easy to script against</span>
+<span class="p">$</span> systemctl is-active sshd
 
 <span class="c"># Same check on a system without systemctl</span>
 <span class="p">$</span> service sshd status
 
-<span class="c"># Fully disable a service so it can't be restarted</span>
-<span class="p">$</span> systemctl mask &lt;service&gt;
+<span class="c"># Fully disable a service — changes system state, needs sudo</span>
+<span class="p">$</span> sudo systemctl mask &lt;service&gt;
 
 <span class="c"># Make sure a legitimate service survives a reboot</span>
-<span class="p">$</span> systemctl enable nginx
+<span class="p">$</span> sudo systemctl enable nginx
 
 <span class="c"># Legacy init.d fallback (rare — mostly older/minimal distros)</span>
 <span class="p">$</span> /etc/init.d/sshd status</pre></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p><code>status</code> is read-only and works without <code>sudo</code>. Anything that actually changes a service's state — <code>start</code>, <code>stop</code>, <code>restart</code>, <code>enable</code>, <code>disable</code>, <code>mask</code> — needs <code>sudo</code>, since it's controlling something system-wide, not per-user.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Stopping or masking the wrong service (e.g. your own SSH access) can lock you out of the box remotely. Confirm the service name and your access path before disabling anything remote-facing.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
@@ -1959,8 +2123,10 @@
           </div>
           <div class="field" style="margin-top:14px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Every distro family ships its own package manager for installing, updating, and removing software. The action is the same across all of them; only the command name and exact flags change.</p></div>
+            <div class="field-body"><p>Every distro family ships its own package manager for installing, updating, and removing software. Each one is really two things bundled together: a <strong>local index</strong> of what software exists and what version is current (fetched from remote repositories), and the actual <strong>install/upgrade/remove</strong> operations that act on that index. The underlying concepts are the same everywhere — but unlike most of the command pairs in this doc, the actual syntax genuinely differs by tool, not just by flag name. <code>apt</code> and <code>yum</code> happen to share similar English-word verbs; <code>apk</code> and <code>pacman</code> do not.</p></div>
           </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Keeping packages patched (<code>upgrade</code>) closes known vulnerabilities before they can be exploited. Removing software that isn't needed (<code>purge</code>/<code>remove</code>) shrinks the attack surface — every installed package is one more thing that could have a vulnerability. Knowing exactly what's installed and at what version is often the first question in an incident.</p></div></div>
           <div class="field"><div class="field-label">Distro Variations</div>
             <table class="opts distro">
               <tr><th>Distro family</th><th>Package manager</th></tr>
@@ -1969,20 +2135,124 @@
               <tr><td>Alpine</td><td><code>apk</code></td></tr>
               <tr><td>Arch</td><td><code>pacman</code></td></tr>
             </table></div>
+          <div class="field"><div class="field-label">Subcommand Reference — All Four, Side by Side</div>
+            <table class="opts">
+              <tr><th>Concept</th><th>apt</th><th>yum</th><th>apk</th><th>pacman</th></tr>
+              <tr><td>Refresh local index only</td><td>update</td><td>makecache</td><td>update</td><td>-Sy (⚠ never run alone)</td></tr>
+              <tr><td>Upgrade installed packages</td><td>upgrade</td><td>update</td><td>upgrade</td><td>-Syu</td></tr>
+              <tr><td>Install a new package</td><td>install &lt;pkg&gt;</td><td>install &lt;pkg&gt;</td><td>add &lt;pkg&gt;</td><td>-S &lt;pkg&gt;</td></tr>
+              <tr><td>Remove a package</td><td>remove &lt;pkg&gt;</td><td>remove &lt;pkg&gt;</td><td>del &lt;pkg&gt;</td><td>-R &lt;pkg&gt;</td></tr>
+              <tr><td>Remove + config/dependencies</td><td>purge &lt;pkg&gt;</td><td>remove &lt;pkg&gt; (no distinct purge)</td><td>del &lt;pkg&gt; (cleans up by default)</td><td>-Rns &lt;pkg&gt;</td></tr>
+              <tr><td>Search for a package</td><td>search &lt;term&gt;</td><td>search &lt;term&gt;</td><td>search &lt;term&gt;</td><td>-Ss &lt;term&gt;</td></tr>
+            </table></div>
           <div class="field"><div class="field-label">Examples</div>
-            <pre class="example"><span class="c"># Debian-based</span>
-<span class="p">$</span> apt update
-<span class="p">$</span> apt upgrade
-<span class="p">$</span> apt install &lt;package&gt;
-<span class="p">$</span> apt purge &lt;package&gt;
+            <pre class="example"><span class="c"># Run update FIRST — installing/upgrading against an old package</span>
+<span class="c"># list can fail or grab outdated versions</span>
+<span class="p">$</span> sudo apt update
+<span class="p">$</span> sudo apt upgrade
+<span class="p">$</span> sudo apt install &lt;package&gt;
 
-<span class="c"># RHEL-based</span>
-<span class="p">$</span> yum update
-<span class="p">$</span> yum upgrade
-<span class="p">$</span> yum install &lt;package&gt;
-<span class="p">$</span> yum remove &lt;package&gt;</pre></div>
-          <div class="field"><div class="field-label">Notes</div>
+<span class="c"># -y auto-confirms the "Do you want to continue? [Y/n]" prompt —</span>
+<span class="c"># useful for scripting, but only use it once you trust what you're installing</span>
+<span class="p">$</span> sudo apt install &lt;package&gt; -y
+
+<span class="p">$</span> sudo apt purge &lt;package&gt;
+<span class="p">$</span> apt search &lt;package&gt;        <span class="c"># no sudo needed — read-only</span>
+
+<span class="c"># RHEL-based — update already refreshes AND upgrades in one step</span>
+<span class="p">$</span> sudo yum update
+<span class="p">$</span> sudo yum install &lt;package&gt;
+<span class="p">$</span> sudo yum remove &lt;package&gt;
+
+<span class="c"># Alpine — different verbs: add/del, not install/remove</span>
+<span class="p">$</span> sudo apk update
+<span class="p">$</span> sudo apk upgrade
+<span class="p">$</span> sudo apk add &lt;package&gt;
+<span class="p">$</span> sudo apk del &lt;package&gt;
+
+<span class="c"># Arch — single-letter operations, always refresh+upgrade together</span>
+<span class="p">$</span> sudo pacman -Syu
+<span class="p">$</span> sudo pacman -S &lt;package&gt;
+<span class="p">$</span> sudo pacman -Rns &lt;package&gt;</pre></div>
+          <div class="field"><div class="field-label">Notes — Run update First</div>
+            <div class="field-body"><p>Always run <code>update</code> before <code>install</code>/<code>upgrade</code> — otherwise you may be working from an outdated package list. (On <code>yum</code> this happens automatically, since <code>update</code> already does both.)</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p><strong>Arch/pacman specifically:</strong> never run <code>pacman -Sy</code> by itself without also upgrading (<code>-u</code>) in the same command. Refreshing the index without upgrading right after can produce a "partial upgrade" — a known way to break a rolling-release system, since package interdependencies assume a consistent snapshot. Always pair them: <code>pacman -Syu</code>, never just <code>-Sy</code> on its own.</p></div></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p><code>update</code>, <code>upgrade</code>, <code>install</code>, <code>remove</code>, and <code>purge</code> all need <code>sudo</code> (or to be run as root) — they write to system-wide locations like <code>/usr</code>, <code>/etc</code>, and the package database itself, which only root can modify. Commands that only look things up — <code>apt search</code>, <code>apt list --installed</code> — are read-only and don't need it. See the <a href="#cmd-sudo" class="xref" data-target="cmd-sudo">sudo</a> card if privilege escalation itself isn't clear yet.</p></div></div>
+          <div class="field"><div class="field-label">Notes — Common Errors</div>
+            <div class="field-body"><p>Forgetting <code>sudo</code> usually shows up as <code>Permission denied</code>, or on Debian/apt specifically, something like <code>Unable to acquire the dpkg frontend lock</code>. Both mean the same thing: re-run the command with <code>sudo</code> in front of it.</p></div></div>
+          <div class="field"><div class="field-label">Notes — Distro Family</div>
             <div class="field-body"><p>Knowing the package manager tells you the distro family at a glance — useful shorthand when jumping onto an unfamiliar box mid-competition or mid-incident.</p></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Version Control</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-git-clone">
+        <summary><span class="chev">▶</span><code class="cmdname">git clone</code><span class="cmd-desc">— download a full copy of a remote repository</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Downloads a complete copy of a remote repository — files plus its full version history — into a new local directory named after the repo.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Pulling known-good site content, configs, or scripts from a trusted repository (e.g. GitHub) directly onto a box — for a static site, the cloned files can be copied straight into a web root with <a href="#cmd-cp" class="xref" data-target="cmd-cp">cp -r</a>.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> git clone &lt;repo-url&gt; [directory]</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>--depth 1</td><td>Shallow clone — just the latest snapshot, not the full history. Faster when history isn't needed.</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Clone a repo, then deploy its contents as a website</span>
+<span class="p">$</span> git clone https://github.com/user/my-site.git
+<span class="p">$</span> sudo cp -r my-site/* /var/www/html/</pre></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Cloning and deploying content from a source you haven't verified is itself a risk, especially onto anything internet-facing — confirm the repo is what it claims to be before copying its contents into production.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-cp" class="xref" data-target="cmd-cp">cp</a></div></div>
+        </div>
+      </details>
+
+      <div class="cat"><span class="cat-label">Database</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-mariadb">
+        <summary><span class="chev">▶</span><code class="cmdname">mariadb</code><span class="cmd-desc">— command-line client for a MariaDB/MySQL server</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Connects to a MariaDB (or compatible MySQL) server and runs SQL commands against it — separate from <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a>/<a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">apt</a>, which get the server installed and running in the first place. This is the tool for actually working with the data once it's up.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Standing up or verifying a lab/competition database — creating schemas, checking what data exists, confirming a service that depends on the database actually has what it expects.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> sudo mariadb              <span class="c"># root, no password needed — see Notes</span>
+<span class="p">$</span> mariadb -u &lt;user&gt; -p     <span class="c"># specific user, prompts for password</span></pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-u user</td><td>Connect as a specific user instead of the default</td></tr>
+              <tr><td>-p</td><td>Prompt for that user's password</td></tr>
+              <tr><td>-e "query"</td><td>Run a single query and exit — no interactive session</td></tr>
+              <tr><td>&lt; file.sql</td><td>Feed an entire script in from a file, non-interactively</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Interactive session as root</span>
+<span class="p">$</span> sudo mariadb
+
+<span class="c"># One quick query, no interactive session needed</span>
+<span class="p">$</span> sudo mariadb -e "SHOW DATABASES;"
+
+<span class="c"># Run an entire .sql script non-interactively</span>
+<span class="p">$</span> sudo mariadb &lt; setup.sql</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>On Debian, the MariaDB root account uses <code>unix_socket</code> authentication by default — logging in as the Linux root user (via <code>sudo</code>) is itself the authentication, no separate database password needed. This is why <code>sudo mariadb</code> just works with nothing further asked, while <code>mariadb -u root -p</code> typically won't.</p></div></div>
+          <div class="field"><div class="field-label caution">Caution</div>
+            <div class="field-body"><p>Running an unfamiliar <code>.sql</code> script executes arbitrary SQL against the database, same as running an unfamiliar shell script executes arbitrary commands — review what's in it first, especially anything pulled from outside the team.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a>, <a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">apt / yum / apk / pacman</a></div></div>
         </div>
       </details>
 
@@ -1998,7 +2268,10 @@
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Cron is a classic persistence mechanism — always check for scripts that shouldn't be there. See the full write-up under <a href="#tool-cron" class="xref" data-target="tool-cron">Cron</a> in Programs &amp; Tools for the broader system, including <code>/etc/cron.d</code>.</p></div></div>
           <div class="field"><div class="field-label">Syntax</div>
-            <pre class="example"><span class="p">$</span> crontab -e</pre></div>
+            <pre class="example"><span class="p">$</span> crontab -e                    <span class="c"># edit YOUR OWN crontab — no sudo needed</span>
+<span class="p">$</span> sudo crontab -u &lt;user&gt; -e    <span class="c"># edit someone else's crontab — needs sudo</span></pre></div>
+          <div class="field"><div class="field-label">Notes — sudo / Root Access</div>
+            <div class="field-body"><p>Editing your own crontab is self-service — no <code>sudo</code> required, since you're only changing your own scheduled tasks. Editing another user's crontab, or anything under <code>/etc/cron.d</code> (system-wide, not tied to one user), needs <code>sudo</code> — those affect the whole system, not just your account.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Editing or removing a cron entry you don't recognize without documenting it first can destroy evidence of how a system was compromised.</p></div></div>
         </div>
@@ -2032,6 +2305,8 @@
             <div class="field-body"><p>Changes made this way are temporary — they don't survive a reboot on their own. See <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager / systemd-networkd / netplan</a> for making them persistent, and the CIDR/Subnet Mask and Default Gateway glossary entries if the <code>/24</code> notation is unfamiliar.</p></div></div>
           <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>Adding the wrong route or removing the address you're connected through can cut your own remote session immediately. If you're working over SSH, double-check the target interface and address before running <code>addr add/del</code> or <code>route add</code>.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ping" class="xref" data-target="cmd-ping">ping</a></div></div>
         </div>
       </details>
 
@@ -2162,7 +2437,7 @@
         <div class="cmd-body">
           <div class="field" style="margin-top:10px;">
             <div class="field-label">Definition</div>
-            <div class="field-body"><p>Quickly identifies open ports on a host or across the network, which can help surface unexpected services and infer firewall configuration.</p></div>
+            <div class="field-body"><p>Quickly identifies open ports on a host or across the network, which can help surface unexpected services and infer firewall configuration. Not part of a base install — check with <a href="#cmd-whereis" class="xref" data-target="cmd-whereis">command -v nmap</a> before assuming it's there, especially on a fresh or minimal box.</p></div>
           </div>
           <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
             <div class="field-body"><p>Run against your own boxes to verify only intended ports are exposed — treat any unexpected open port as something to investigate immediately.</p></div></div>
@@ -2183,6 +2458,38 @@
 <span class="p">$</span> nmap -p- -sV 192.168.1.20</pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a>, <a href="#cmd-netstat" class="xref" data-target="cmd-netstat">netstat</a>, <a href="#cmd-tcpdump" class="xref" data-target="cmd-tcpdump">tcpdump</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-curl">
+        <summary><span class="chev">▶</span><code class="cmdname">curl</code><span class="cmd-desc">— fetch a URL from the command line</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Transfers data to or from a URL — most commonly used to fetch a web page or API response directly in the terminal, without a browser.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The fast way to confirm a web service is actually responding correctly right after setting it up, especially on a headless box with no browser at all. Also useful for a quick manual check of what a service is actually returning, rather than assuming based on <a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a> showing the port open.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> curl [options] &lt;url&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-I</td><td>Headers only — fast way to check a status code without pulling the whole page</td></tr>
+              <tr><td>-o file</td><td>Save the response to a file instead of printing it</td></tr>
+              <tr><td>-s</td><td>Silent — suppress the progress meter</td></tr>
+              <tr><td>-L</td><td>Follow redirects instead of stopping at the first one</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Confirm a local web server is actually serving content</span>
+<span class="p">$</span> curl http://localhost
+
+<span class="c"># Just the status code / headers, quick pass/fail check</span>
+<span class="p">$</span> curl -I http://localhost</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p>Prints the full response body by default — for a real page that can be a lot of text. Pipe into <a href="#cmd-head" class="xref" data-target="cmd-head">head</a> or <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep</a> if only checking for something specific.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-ping" class="xref" data-target="cmd-ping">ping</a>, <a href="#cmd-ss" class="xref" data-target="cmd-ss">ss</a></div></div>
         </div>
       </details>
 
@@ -2251,6 +2558,28 @@
       </details>
 
       <div class="cat"><span class="cat-label">Help &amp; Documentation</span><span class="cat-line"></span></div>
+
+      <details class="cmd" id="cmd-whereis">
+        <summary><span class="chev">▶</span><code class="cmdname">command -v / which</code><span class="cmd-desc">— check whether a command is actually installed</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Checks whether a given command exists on this system and, if so, prints the path to it. Many tools used in this doc — <a href="#cmd-curl" class="xref" data-target="cmd-curl">curl</a>, <a href="#cmd-git-clone" class="xref" data-target="cmd-git-clone">git</a>, <a href="#cmd-nmap" class="xref" data-target="cmd-nmap">nmap</a> — aren't part of a base install and need to be installed first.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Check before you assume. Running a command that turns out not to be installed just wastes a step; checking first (and installing only if actually missing) avoids the "command not found" surprise mid-task — especially on a minimal or unfamiliar box where you don't know what's already there.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> command -v &lt;name&gt;
+<span class="p">$</span> which &lt;name&gt;</pre></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Check before assuming, install only if it's actually missing</span>
+<span class="p">$</span> command -v curl || sudo apt install curl -y</pre></div>
+          <div class="field"><div class="field-label">Notes</div>
+            <div class="field-body"><p><code>command -v</code> is the more portable/modern choice — <code>which</code> works almost everywhere too but is technically a separate program that isn't always installed by default, which is a little ironic given what it's used for.</p></div></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">apt / yum / apk / pacman</a></div></div>
+        </div>
+      </details>
 
       <details class="cmd" id="cmd-man">
         <summary><span class="chev">▶</span><code class="cmdname">man</code><span class="cmd-desc">— open a command's full manual page</span></summary>
@@ -2392,6 +2721,65 @@
 
       <div class="cat"><span class="cat-label">Environment &amp; Shell</span><span class="cat-line"></span></div>
 
+      <details class="cmd" id="cmd-echo">
+        <summary><span class="chev">▶</span><code class="cmdname">echo</code><span class="cmd-desc">— print text or a variable's value to STDOUT</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Prints its arguments back out — a literal string, the value of a variable, or the output of a substituted command. Simple on its own, but constantly used as the starting point of a pipe or redirect into something else.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>Building input for another command rather than displaying output for a person to read — generating <code>username:password</code> pairs for <a href="#cmd-chpasswd" class="xref" data-target="cmd-chpasswd">chpasswd</a>, appending a timestamped line to an investigation log, or checking a single environment variable without the full <a href="#cmd-env" class="xref" data-target="cmd-env">env</a> dump.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> echo [options] "string"</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-e</td><td>Interpret backslash escapes like <code>\n</code> (newline) and <code>\t</code> (tab) instead of printing them literally</td></tr>
+              <tr><td>-n</td><td>Omit the trailing newline</td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Check a single environment variable</span>
+<span class="p">$</span> echo $PATH
+
+<span class="c"># Build input for another command via a pipe</span>
+<span class="p">$</span> echo "user2:newpassword" | chpasswd
+
+<span class="c"># Append a timestamped line to a running log</span>
+<span class="p">$</span> echo "$(date): checked open ports" &gt;&gt; investigation_log.txt</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-env" class="xref" data-target="cmd-env">env</a>, <a href="#cmd-chpasswd" class="xref" data-target="cmd-chpasswd">chpasswd</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection &amp; pipes</a>, <a href="#cmd-tee" class="xref" data-target="cmd-tee">tee</a></div></div>
+        </div>
+      </details>
+
+      <details class="cmd" id="cmd-tee">
+        <summary><span class="chev">▶</span><code class="cmdname">tee</code><span class="cmd-desc">— write STDIN to a file AND pass it through to STDOUT</span></summary>
+        <div class="cmd-body">
+          <div class="field" style="margin-top:10px;">
+            <div class="field-label">Definition</div>
+            <div class="field-body"><p>Reads from STDIN and splits it two ways at once — writing it to a file <em>and</em> printing it to the screen, like a plumbing T-junction. Unlike a plain redirect, you still see the output as it's written.</p></div>
+          </div>
+          <div class="field"><div class="field-label">Use Case (Cyber Defense context)</div>
+            <div class="field-body"><p>The fix for a common trap: <code>sudo echo "text" &gt; /root-owned-file</code> looks correct but fails, because <code>sudo</code> only elevates <code>echo</code> — the <code>&gt;</code> redirect is set up by your own unprivileged shell before <code>sudo</code> ever runs, so it still can't write to a root-owned file. Piping into <code>sudo tee</code> instead works, because <code>tee</code> itself is the elevated process doing the writing, not a redirect sudo can't see.</p></div></div>
+          <div class="field"><div class="field-label">Syntax</div>
+            <pre class="example"><span class="p">$</span> &lt;command&gt; | tee &lt;file&gt;
+<span class="p">$</span> &lt;command&gt; | sudo tee &lt;file&gt;</pre></div>
+          <div class="field"><div class="field-label">Relevant Options</div>
+            <table class="opts">
+              <tr><th>Flag</th><th>What it does</th></tr>
+              <tr><td>-a</td><td>Append instead of overwrite — same idea as <code>&gt;&gt;</code> vs <code>&gt;</code></td></tr>
+            </table></div>
+          <div class="field"><div class="field-label">Examples</div>
+            <pre class="example"><span class="c"># Write to a root-owned file that echo + sudo alone can't reach</span>
+<span class="p">$</span> echo '&lt;h1&gt;Hello&lt;/h1&gt;' | sudo tee /var/www/html/index.html
+
+<span class="c"># Append instead of overwrite</span>
+<span class="p">$</span> echo "new line" | sudo tee -a /etc/some-config-file</pre></div>
+          <div class="field xref-wrap"><div class="field-label">See Also</div>
+            <div class="field-body"><a href="#cmd-echo" class="xref" data-target="cmd-echo">echo</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection &amp; pipes</a>, <a href="#cmd-sudo" class="xref" data-target="cmd-sudo">sudo</a></div></div>
+        </div>
+      </details>
+
       <details class="cmd" id="cmd-env">
         <summary><span class="chev">▶</span><code class="cmdname">env</code><span class="cmd-desc">— list all environment variables (including $PATH)</span></summary>
         <div class="cmd-body">
@@ -2405,7 +2793,7 @@
             <pre class="example"><span class="p">$</span> env             <span class="c"># every environment variable</span>
 <span class="p">$</span> echo $PATH      <span class="c"># just $PATH specifically</span></pre></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a>, <a href="#cmd-bashscript" class="xref" data-target="cmd-bashscript">bash scripts</a></div></div>
+            <div class="field-body"><a href="#cmd-echo" class="xref" data-target="cmd-echo">echo</a>, <a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a>, <a href="#cmd-bashscript" class="xref" data-target="cmd-bashscript">bash scripts</a></div></div>
         </div>
       </details>
 
@@ -2447,7 +2835,7 @@
           <div class="field"><div class="field-label">Notes</div>
             <div class="field-body"><p><code>./file_name</code> requires the file to have the executable (<code>x</code>) permission bit set — see <a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>. <code>bash file_name</code> works without it.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
-            <div class="field-body"><a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>, <a href="#cmd-env" class="xref" data-target="cmd-env">env</a>, <a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a></div></div>
+            <div class="field-body"><a href="#cmd-chmod" class="xref" data-target="cmd-chmod">chmod</a>, <a href="#cmd-env" class="xref" data-target="cmd-env">env</a>, <a href="#cmd-alias" class="xref" data-target="cmd-alias">alias</a>, <a href="#cmd-redirect" class="xref" data-target="cmd-redirect">redirection, pipes &amp; chaining</a></div></div>
         </div>
       </details>
 
@@ -2484,7 +2872,8 @@
             <table class="opts">
               <tr><th>Flag</th><th>What it does</th></tr>
               <tr><td>-P</td><td>Set the default policy for a chain</td></tr>
-              <tr><td>-A</td><td>Append a new rule to a chain</td></tr>
+              <tr><td>-A</td><td>Append a new rule to the <strong>end</strong> of a chain</td></tr>
+              <tr><td>-I</td><td>Insert a new rule at a specific position — defaults to position 1, the very <strong>top</strong> of the chain</td></tr>
               <tr><td>-L --line-numbers</td><td>List current rules with line numbers</td></tr>
               <tr><td>-F</td><td>Flush (delete) all rules</td></tr>
             </table></div>
@@ -2502,6 +2891,20 @@
 
 <span class="c"># Allow outgoing responses to connections we started</span>
 <span class="p">$</span> iptables -A OUTPUT -p tcp -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT</pre></div>
+          <div class="field"><div class="field-label">Worked Example — Why Rule Order Matters</div>
+            <div class="field-body"><p>Rules are checked top-down and the <strong>first match wins</strong> — once a rule matches, iptables stops looking at the rest of the chain. That makes <em>where</em> a rule sits just as important as the rule itself.</p></div>
+            <pre class="example"><span class="c"># Chain already ends with a catch-all DROP rule at line 5:</span>
+<span class="p">$</span> iptables -L INPUT --line-numbers
+<span class="c"># ...
+# 5    DROP    all  --  anywhere  anywhere</span>
+
+<span class="c"># Appending a new ACCEPT rule adds it to the BOTTOM — after the</span>
+<span class="c"># DROP, so it's unreachable. Traffic still gets blocked:</span>
+<span class="p">$</span> iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+<span class="c"># Insert it at a specific line instead, ahead of the DROP,</span>
+<span class="c"># so it's actually evaluated before the catch-all fires:</span>
+<span class="p">$</span> iptables -I INPUT 5 -p tcp --dport 443 -j ACCEPT</pre></div>
           <div class="field"><div class="field-label">Persisting Rules</div>
             <div class="field-body"><p>Rules built with <code>iptables -A</code>/<code>-P</code> live in memory only and vanish on reboot unless explicitly saved. The save/restore mechanism varies by distro:</p></div>
             <pre class="example"><span class="c"># Save current rules to a file</span>
@@ -2510,7 +2913,7 @@
 <span class="c"># Restore rules from that file (e.g. on boot, via a startup hook)</span>
 <span class="p">$</span> iptables-restore &lt; /etc/iptables/rules.v4</pre></div>
           <div class="field"><div class="field-label caution">Caution</div>
-            <div class="field-body"><p><code>iptables -F</code> only use this with complete understanding — it can affect other services in unexpected ways. Document any flush for the team. Setting a default DROP policy <em>before</em> your allow rules are in place can lock out your own remote access — write the ACCEPT rules for established connections and your own management access first, then set the deny policy last.</p></div></div>
+            <div class="field-body"><p><code>iptables -F</code> only use this with complete understanding — it can affect other services in unexpected ways. Document any flush for the team. Setting a default DROP policy <em>before</em> your allow rules are in place can lock out your own remote access — write the ACCEPT rules for established connections and your own management access first, then set the deny policy last. Same idea applies within a chain: check <code>-L --line-numbers</code> before adding a new rule with <code>-A</code> — if a catch-all DROP is already there, appending lands after it and the new rule never fires. Use <code>-I</code> to insert ahead of it instead.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-ufw" class="xref" data-target="cmd-ufw">ufw / firewall-cmd</a>, <a href="#cmd-ip" class="xref" data-target="cmd-ip">ip</a>, <a href="#tool-netmgr" class="xref" data-target="tool-netmgr">NetworkManager</a></div></div>
         </div>
@@ -2575,7 +2978,7 @@
 
 <span class="c"># Check system-wide cron entries</span>
 <span class="p">$</span> ls /etc/cron.d</pre></div>
-          <div class="field"><div class="field-label">Notes</div>
+          <div class="field"><div class="field-label caution">Caution</div>
             <div class="field-body"><p>If a scheduled task has no legitimate use, disable it — <code>systemctl stop/disable/mask</code> the cron service is a last resort if the whole subsystem is compromised, but usually removing the specific malicious entry is the right move.</p></div></div>
           <div class="field xref-wrap"><div class="field-label">See Also</div>
             <div class="field-body"><a href="#cmd-crontab" class="xref" data-target="cmd-crontab">crontab</a>, <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a></div></div>
@@ -2686,11 +3089,11 @@
       <span class="chev">▶</span>
       <span class="idx">03</span>
       <span class="title">Quick Start &amp; Routine Checks</span>
-      <span class="count">3 tracks</span>
+      <span class="count">5 tracks</span>
     </summary>
     <div class="section-body">
       <div class="field-body" style="font-size:12.5px;color:var(--text-dim);margin-bottom:4px;">
-        Three separate tracks: <strong>A</strong> is read-only recon — safe to run any time, on any box. <strong>B</strong> and <strong>C</strong> actively change the system, so they're kept separate from recon and from each other. Run A first. Only move into B or C once you understand what's already there.
+        Five separate tracks: <strong>A</strong> is read-only recon — safe to run any time, on any box. <strong>B</strong>, <strong>C</strong>, <strong>D</strong>, and <strong>E</strong> actively change the system, so they're kept separate from recon and from each other. Run A first. Only move into B, C, D, or E once you understand what's already there.
       </div>
 
       <!-- TRACK A -->
@@ -2736,9 +3139,10 @@
             </li>
             <li>
               <div class="step-title">Glance at network config and listening ports</div>
-              <div class="step-body">Just looking here — confirm your own IP, then see what's listening and who's connected. Full network setup lives in Track C.</div>
+              <div class="step-body">Just looking here — confirm your own IP, then see what's listening and who's connected. Full network setup lives in Track C. <code>nmap</code> isn't part of a base install — <code>ss</code> alone still covers listening ports without it if it's not there yet.</div>
               <pre class="example"><span class="p">$</span> ip a
 <span class="p">$</span> ss -tulnp
+<span class="p">$</span> command -v nmap || sudo apt install nmap -y
 <span class="p">$</span> nmap localhost</pre>
             </li>
             <li>
@@ -2861,6 +3265,134 @@
             <li>
               <div class="step-title">Document the IP scheme</div>
               <div class="step-body">Record what's assigned where — critical for the team when multiple boxes are being configured together.</div>
+            </li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- TRACK D -->
+      <details class="track">
+        <summary>
+          <span class="chev">▶</span>
+          <span class="track-letter">D</span>
+          <span class="track-title">Apache Web Server Setup</span>
+          <span class="track-sub">active — changes the system</span>
+        </summary>
+        <div class="track-body">
+          <div class="track-intro">Debian/Ubuntu specifically. See <a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">apt/yum/apk/pacman</a> for the equivalent on other distro families.</div>
+          <ol class="checklist">
+            <li>
+              <div class="step-title">Check prerequisites before starting</div>
+              <div class="step-body">Neither of these is part of a base Debian/Ubuntu install. <code>curl</code> is needed for step 5 (verification) — install it regardless. <code>git</code> is only needed <em>if</em> using Option 3b in step 4 to pull site files from a repo; skip it if using any other option.</div>
+              <pre class="example"><span class="c"># curl — REQUIRED, used later in step 5 to verify the page loaded</span>
+<span class="p">$</span> command -v curl || sudo apt install curl -y
+
+<span class="c"># git — OPTIONAL, only needed for the repo-based deploy option (3b)</span>
+<span class="p">$</span> command -v git || sudo apt install git -y</pre>
+            </li>
+            <li>
+              <div class="step-title">Update the package index, then install Apache</div>
+              <div class="step-body">Same order-of-operations principle as any package install — refresh first, then install.</div>
+              <pre class="example"><span class="p">$</span> sudo apt update
+<span class="p">$</span> sudo apt install apache2 -y</pre>
+            </li>
+            <li>
+              <div class="step-title">Confirm it's actually running</div>
+              <div class="step-body">Either the full status (look for "Active: active (running)", press <code>q</code> to leave the pager), or the quick yes/no version.</div>
+              <pre class="example"><span class="p">$</span> sudo systemctl status apache2
+<span class="p">$</span> sudo systemctl is-active apache2</pre>
+            </li>
+            <li>
+              <div class="step-title">Find the web root</div>
+              <div class="step-body">Apache's default document root on Debian is <code>/var/www/html</code>, but it's set in a config file, not hardcoded — worth confirming rather than assuming, especially on a box someone else configured.</div>
+              <pre class="example"><span class="p">$</span> grep -R "DocumentRoot" /etc/apache2/sites-enabled/</pre>
+            </li>
+            <li>
+              <div class="step-title">Replace the default page — pick whichever fits the content</div>
+              <div class="step-body">Three options depending on how much content there is and where it's coming from. All need <code>sudo</code>, since the web root is root-owned. Option 3b (repo) is optional and requires <code>git</code> from step 1 — skip it if not pulling from a repository.</div>
+              <pre class="example"><span class="c"># Option 1: short text, one line — echo piped into tee</span>
+<span class="p">$</span> echo '&lt;h1&gt;My Apache Website&lt;/h1&gt;&lt;p&gt;Apache is working on cd-su-linux.&lt;/p&gt;' | sudo tee /var/www/html/index.html
+
+<span class="c"># Option 2: longer/multi-line content — a real text editor</span>
+<span class="p">$</span> sudo nano /var/www/html/index.html
+
+<span class="c"># Option 3: importing an existing file, or a whole site's worth of files</span>
+<span class="p">$</span> sudo cp mypage.html /var/www/html/index.html
+<span class="p">$</span> sudo cp -r mysite/* /var/www/html/
+
+<span class="c"># Option 3b: pulling the files from a repository first</span>
+<span class="p">$</span> git clone https://github.com/user/my-site.git
+<span class="p">$</span> sudo cp -r my-site/* /var/www/html/</pre>
+            </li>
+            <li>
+              <div class="step-title">Verify the page locally</div>
+              <div class="step-body">Confirms Apache is actually serving the updated content, without needing a browser.</div>
+              <pre class="example"><span class="p">$</span> curl http://localhost</pre>
+            </li>
+            <li>
+              <div class="step-title">If the page doesn't load but the box is otherwise reachable</div>
+              <div class="step-body">Confirm something is actually listening on port 80 before assuming Apache itself is broken.</div>
+              <pre class="example"><span class="p">$</span> sudo ss -lntp | grep ':80'</pre>
+            </li>
+          </ol>
+        </div>
+      </details>
+
+      <!-- TRACK E -->
+      <details class="track">
+        <summary>
+          <span class="chev">▶</span>
+          <span class="track-letter">E</span>
+          <span class="track-title">MariaDB / SQL Database Setup</span>
+          <span class="track-sub">active — changes the system</span>
+        </summary>
+        <div class="track-body">
+          <div class="track-intro">Debian/Ubuntu specifically. See <a href="#cmd-mariadb" class="xref" data-target="cmd-mariadb">mariadb</a> for the full client command reference.</div>
+          <ol class="checklist">
+            <li>
+              <div class="step-title">Update the package index, then install MariaDB</div>
+              <div class="step-body">Same order-of-operations principle as any package install — refresh first, then install.</div>
+              <pre class="example"><span class="p">$</span> sudo apt update
+<span class="p">$</span> sudo apt install mariadb-server -y</pre>
+            </li>
+            <li>
+              <div class="step-title">Confirm it's actually running</div>
+              <div class="step-body">Look for "Active: active (running)" — press <code>q</code> to leave the pager.</div>
+              <pre class="example"><span class="p">$</span> sudo systemctl status mariadb</pre>
+            </li>
+            <li>
+              <div class="step-title">Log in and set up a database</div>
+              <div class="step-body">Root login is passwordless by default on Debian — see the <a href="#cmd-mariadb" class="xref" data-target="cmd-mariadb">mariadb</a> card's Notes for why. Once connected, the prompt changes to <code>MariaDB [(none)]&gt;</code> — that's just what the screen shows, not something to type. The block below is the actual SQL to run once inside: make a database, switch into it, create a table, add a few rows.</div>
+              <pre class="example"><span class="p">$</span> sudo mariadb</pre>
+              <pre class="example">CREATE DATABASE &lt;dbname&gt;;
+USE &lt;dbname&gt;;
+CREATE TABLE &lt;tablename&gt; (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    &lt;column1&gt; VARCHAR(50),
+    &lt;column2&gt; VARCHAR(50)
+);
+INSERT INTO &lt;tablename&gt; (&lt;column1&gt;, &lt;column2&gt;)
+VALUES ('&lt;value1&gt;', '&lt;value2&gt;'), ('&lt;value3&gt;', '&lt;value4&gt;');</pre>
+            </li>
+            <li>
+              <div class="step-title">Verify the data and structure</div>
+              <div class="step-body">Still inside the same session. Confirm the rows are actually there, and that the table/columns look right.</div>
+              <pre class="example">SELECT * FROM &lt;tablename&gt;;
+SHOW TABLES;
+DESCRIBE &lt;tablename&gt;;</pre>
+            </li>
+            <li>
+              <div class="step-title">Exit when finished</div>
+              <div class="step-body">Returns to the regular shell.</div>
+              <pre class="example">EXIT;</pre>
+            </li>
+            <li>
+              <div class="step-title">Optional: run a pre-built SQL script instead of typing interactively</div>
+              <div class="step-body">Useful for a script that creates and populates a database in one shot, rather than typing each statement by hand. Two ways to do it — the first from the regular shell, the second typed inside an already-open MariaDB session.</div>
+              <pre class="example"><span class="c"># From the shell, non-interactively</span>
+<span class="p">$</span> sudo mariadb &lt; setup.sql</pre>
+              <pre class="example"><span class="c">-- From inside an existing interactive session</span>
+source setup.sql;</pre>
             </li>
           </ol>
         </div>
@@ -3098,11 +3630,72 @@
           </details>
         </dd>
         </div>
+
+        <div class="glossary-item" id="ref-troubleshoot">
+        <dt>Common Issues</dt>
+        <dd>
+          <p style="margin-bottom:10px;">Things that come up often enough to be worth a quick lookup — a symptom, why it actually happens, and the fix.</p>
+
+          <details class="cmd">
+            <summary><span class="chev">▶</span><code class="cmdname">Full Reference</code><span class="cmd-desc">— symptom, cause, and fix for common gotchas</span></summary>
+            <div class="cmd-body">
+
+              <div class="issues-list" style="margin-top:10px;">
+
+                <div class="issue">
+                  <div class="issue-symptom">"Permission denied" or "Unable to acquire the dpkg frontend lock" when installing a package</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>Forgot <code>sudo</code> — <a href="#cmd-pkgmgr" class="xref" data-target="cmd-pkgmgr">package managers</a> write to system-wide locations that only root can touch</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Re-run the same command with <code>sudo</code> in front of it</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Added a user to a group with <a href="#cmd-usermod" class="xref" data-target="cmd-usermod">usermod -aG</a>, but they still don't have that access</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>Group membership is calculated at login — an already-open session keeps the <em>old</em> group list even after the change</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Start a new session — log out and back in, open a fresh terminal/SSH connection, or run <code>newgrp &lt;group&gt;</code> in the current shell. A full reboot also works but is far more than the fix requires.</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Edited a config file (e.g. <code>sshd_config</code>) but nothing seems different</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>Most services only read their config at startup — editing the file doesn't make a running process pick up the change</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Reload or restart the service: <code>sudo systemctl restart sshd</code>. Check <a href="#cmd-systemctl" class="xref" data-target="cmd-systemctl">systemctl</a> for the difference between restart and reload.</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Can't edit or delete a file, even logged in as root</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>The file likely has the immutable bit set</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Check with <a href="#cmd-lsattr" class="xref" data-target="cmd-lsattr">lsattr</a>, then clear it with <code>sudo chattr -i &lt;file&gt;</code> before trying again</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Ran <a href="#cmd-grep" class="xref" data-target="cmd-grep">grep -r</a> on a directory and got no matches, even though the text is definitely in there somewhere</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>Lowercase <code>-r</code> skips symlinks it finds while recursing — if the directory is full of symlinks (like Apache's <code>sites-enabled/</code>), it silently matches nothing</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Use capital <code>-R</code> instead, which follows symlinks, or point the search directly at wherever the real files live instead of the symlinked directory</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Firewall rules that worked earlier are gone after a reboot</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span><a href="#tool-iptables" class="xref" data-target="tool-iptables">iptables</a> rules live in memory only by default — nothing persists them automatically</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Save rules explicitly with <code>iptables-save</code>, or use <a href="#cmd-ufw" class="xref" data-target="cmd-ufw">ufw</a>/firewalld instead, which persist on their own</div>
+                </div>
+
+                <div class="issue">
+                  <div class="issue-symptom">Added a user to one group, but they lost access to groups they were already in</div>
+                  <div class="issue-row"><span class="issue-label">Cause</span>Used <code>usermod -G</code> instead of <code>-aG</code> — <code>-G</code> replaces the entire group list rather than adding to it</div>
+                  <div class="issue-row"><span class="issue-label">Fix</span>Re-add the missing groups explicitly with <code>-G group1,group2,group3</code>, or use <code>-aG</code> going forward to avoid this entirely</div>
+                </div>
+
+              </div>
+
+            </div>
+          </details>
+        </dd>
+        </div>
+
       </dl>
     </div>
   </details>
 
-  <div class="footer-note">Cyber Defense Linux Field Guide — v1</div>
+  <div class="footer-note">Cyber Defense Linux Field Guide — v1 · Joe Linares · <a href="https://github.com/joeantlin/cyber-defense-linux-cheatsheet" target="_blank" rel="noopener">github.com/joeantlin/cyber-defense-linux-cheatsheet</a></div>
 
 </div>
 
@@ -3151,7 +3744,10 @@
     btn.textContent = 'copy';
     btn.addEventListener('click', function(e){
       e.stopPropagation();
-      var text = pre.innerText.replace(/copy$/,'').trim();
+      var raw = pre.innerText.replace(/copy$/,'').trim();
+      var text = raw.split('\n').map(function(line){
+        return line.replace(/^\s*\$\s?/, '');
+      }).join('\n');
       navigator.clipboard.writeText(text).then(function(){
         btn.textContent = 'copied';
         setTimeout(function(){ btn.textContent = 'copy'; }, 1400);
